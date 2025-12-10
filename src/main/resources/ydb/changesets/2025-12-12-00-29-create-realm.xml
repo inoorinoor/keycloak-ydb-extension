@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+  <changeSet id="2025-12-12-00-29-create-realm-table" author="keycloak-ydb-extension">
+    <createTable tableName="realms">
+      <column name="id" type="TEXT">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+      <column name="name" type="TEXT"/>
+    </createTable>
+  </changeSet>
+
+  <changeSet id="2025-12-12-00-39-create-realm-attributes-table" author="your-author">
+    <createTable tableName="realm_attributes">
+      <column name="id" type="TEXT">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+      <column name="name" type="TEXT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="value" type="TEXT"/>
+      <column name="realm_id" type="TEXT">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+</databaseChangeLog>
