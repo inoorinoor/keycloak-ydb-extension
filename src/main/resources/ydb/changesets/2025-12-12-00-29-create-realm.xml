@@ -16,7 +16,7 @@
     </createTable>
   </changeSet>
 
-  <changeSet id="2025-12-12-00-39-create-realm-attributes-table" author="your-author">
+  <changeSet id="2025-12-12-00-39-create-realm-attributes-table" author="keycloak-ydb-extension">
     <createTable tableName="realm_attributes">
       <column name="id" type="TEXT">
         <constraints primaryKey="true" nullable="false"/>
@@ -30,4 +30,31 @@
       </column>
     </createTable>
   </changeSet>
+
+  <changeSet id="2025-12-14-02-18-create-realm-required-credential-table" author="keycloak-ydb-extension">
+    <createTable tableName="realm_required_credential">
+      <column name="id" type="TEXT">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+      <column name="TYPE" type="TEXT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="FORM_LABEL" type="VARCHAR(255)"/>
+      <!--  TODO: Make sure this is worked as defaultValueBoolean="false" -->
+      <!--  TODO:      <column name="INPUT" type="BOOLEAN" defaultValueBoolean="false">-->
+      <column name="INPUT" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+
+      <!--  TODO: Make sure this is worked as defaultValueBoolean="false" -->
+      <!--      <column name="SECRET" type="BOOLEAN" defaultValueBoolean="false">-->
+      <column name="SECRET" type="BOOLEAN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="REALM_ID" type="VARCHAR(36)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+
 </databaseChangeLog>
