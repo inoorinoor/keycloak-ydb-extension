@@ -1,6 +1,7 @@
 package com.yandex.keycloak.ydb.realm
 
 import com.yandex.keycloak.ydb.common.AttributePrefixes.INTERNAL_ATTRIBUTE_PREFIX
+import com.yandex.keycloak.ydb.common.AttributePrefixes.READONLY_ATTRIBUTE_PREFIX
 import com.yandex.keycloak.ydb.realm.domain.Realm
 import com.yandex.keycloak.ydb.realm.service.RealmService
 import org.keycloak.common.enums.SslRequired
@@ -16,7 +17,7 @@ class YdbRealmAdapter(
 ) : RealmModel {
   override fun getId() = realm.id
 
-  override fun getName(): String = realm.name
+  override fun getName(): String = realm.id
 
   override fun setName(name: String?) {
     if (name != null && name != realm.name) {
@@ -30,7 +31,7 @@ class YdbRealmAdapter(
 
   override fun setDisplayName(displayName: String?) = setAttribute(DISPLAY_NAME, displayName)
 
-  override fun getDisplayNameHtml(): String? = getAttribute(DISPLAY_NAME_HTML);
+  override fun getDisplayNameHtml(): String? = getAttribute(DISPLAY_NAME_HTML)
 
   override fun setDisplayNameHtml(displayNameHtml: String?) = setAttribute(DISPLAY_NAME_HTML, displayNameHtml)
 
@@ -68,367 +69,277 @@ class YdbRealmAdapter(
 
   override fun isOrganizationsEnabled(): Boolean = getAttribute(IS_ORGANIZATIONS_ENABLED, false)
 
-  override fun setOrganizationsEnabled(p0: Boolean) {
-    TODO("Not yet implemented")
+  override fun setOrganizationsEnabled(organizationsEnabled: Boolean) =
+    setAttribute(IS_ORGANIZATIONS_ENABLED, organizationsEnabled)
+
+  override fun isAdminPermissionsEnabled(): Boolean = getAttribute(IS_ADMIN_PERMISSIONS_ENABLED, false)
+
+  override fun setAdminPermissionsEnabled(adminPermissionsEnabled: Boolean) =
+    setAttribute(IS_ADMIN_PERMISSIONS_ENABLED, adminPermissionsEnabled)
+
+  override fun isVerifiableCredentialsEnabled(): Boolean = getAttribute(IS_VERIFIABLE_CREDENTIALS_ENABLED, false)
+
+  override fun setVerifiableCredentialsEnabled(verifiableCredentialsEnabled: Boolean) =
+    setAttribute(IS_VERIFIABLE_CREDENTIALS_ENABLED, verifiableCredentialsEnabled)
+
+  override fun setAttribute(name: String?, value: String?) {
+    if (name != null && value != null) {
+      realmService.setAttribute(realm.id, name, value)
+    }
   }
 
-  override fun isAdminPermissionsEnabled(): Boolean {
-    TODO("Not yet implemented")
+  override fun removeAttribute(name: String?) {
+    if (name != null) {
+      realmService.removeRealmAttributes(realm.id, name)
+    }
   }
 
-  override fun setAdminPermissionsEnabled(p0: Boolean) {
-    TODO("Not yet implemented")
+  override fun getAttribute(name: String?): String? {
+    if(name == null) return null
+
+    return realmService.getAttributeByRealmIdAndName(realm.id, name)
   }
 
-  override fun isVerifiableCredentialsEnabled(): Boolean {
-    TODO("Not yet implemented")
-  }
+  override fun getAttributes(): Map<String, String> =
+    realmService.getAttributesByRealmId(realm.id).mapNotNull {
+      val value = it.value ?: return@mapNotNull null
 
-  override fun setVerifiableCredentialsEnabled(p0: Boolean) {
-    TODO("Not yet implemented")
-  }
+      name to value
+    }.toMap()
 
-  override fun setAttribute(p0: String?, p1: String?) {
-    TODO("Not yet implemented")
-  }
 
-  override fun removeAttribute(p0: String?) {
-    TODO("Not yet implemented")
-  }
+  override fun isBruteForceProtected(): Boolean = getAttribute(IS_BRUTE_FORCE_PROTECTED, false)
 
-  override fun getAttribute(p0: String?): String? {
-    TODO("Not yet implemented")
-  }
+  override fun setBruteForceProtected(bruteForceProtected: Boolean) =
+    setAttribute(IS_BRUTE_FORCE_PROTECTED, bruteForceProtected)
 
-  override fun getAttributes(): Map<String?, String?>? {
-    TODO("Not yet implemented")
-  }
+  override fun isPermanentLockout(): Boolean = getAttribute(IS_PERMANENT_LOCKOUT, false)
 
-  override fun isBruteForceProtected(): Boolean {
-    TODO("Not yet implemented")
-  }
+  override fun setPermanentLockout(permanentLockout: Boolean) =
+    setAttribute(IS_PERMANENT_LOCKOUT, permanentLockout)
 
-  override fun setBruteForceProtected(p0: Boolean) {
-    TODO("Not yet implemented")
-  }
+  override fun getMaxTemporaryLockouts(): Int = getAttribute(MAX_TEMPORARY_LOCKOUTS, 0)
 
-  override fun isPermanentLockout(): Boolean {
-    TODO("Not yet implemented")
-  }
-
-  override fun setPermanentLockout(p0: Boolean) {
-    TODO("Not yet implemented")
-  }
-
-  override fun getMaxTemporaryLockouts(): Int {
-    TODO("Not yet implemented")
-  }
-
-  override fun setMaxTemporaryLockouts(p0: Int) {
-    TODO("Not yet implemented")
-  }
+  override fun setMaxTemporaryLockouts(maxTemporaryLockouts: Int) =
+    setAttribute(MAX_TEMPORARY_LOCKOUTS, maxTemporaryLockouts)
 
   override fun getBruteForceStrategy(): RealmRepresentation.BruteForceStrategy? {
-    TODO("Not yet implemented")
+    val strategy = getAttribute(BRUTE_FORCE_STRATEGY)
+    return if (strategy == null) RealmRepresentation.BruteForceStrategy.MULTIPLE
+    else RealmRepresentation.BruteForceStrategy.valueOf(strategy)
   }
 
-  override fun setBruteForceStrategy(p0: RealmRepresentation.BruteForceStrategy?) {
-    TODO("Not yet implemented")
-  }
+  override fun setBruteForceStrategy(bruteForceStrategy: RealmRepresentation.BruteForceStrategy?) =
+    setAttribute(BRUTE_FORCE_STRATEGY, bruteForceStrategy?.name)
 
-  override fun getMaxFailureWaitSeconds(): Int {
-    TODO("Not yet implemented")
-  }
+  override fun getMaxFailureWaitSeconds(): Int = getAttribute(MAX_FAILURE_WAIT_SECONDS, 0)
 
-  override fun setMaxFailureWaitSeconds(p0: Int) {
-    TODO("Not yet implemented")
-  }
+  override fun setMaxFailureWaitSeconds(maxFailureWaitSeconds: Int) =
+    setAttribute(MAX_FAILURE_WAIT_SECONDS, maxFailureWaitSeconds)
 
-  override fun getWaitIncrementSeconds(): Int {
-    TODO("Not yet implemented")
-  }
+  override fun getWaitIncrementSeconds(): Int = getAttribute(WAIT_INCREMENT_SECONDS, 0)
 
-  override fun setWaitIncrementSeconds(p0: Int) {
-    TODO("Not yet implemented")
-  }
+  override fun setWaitIncrementSeconds(waitIncrementSeconds: Int) =
+    setAttribute(WAIT_INCREMENT_SECONDS, waitIncrementSeconds)
 
-  override fun getMinimumQuickLoginWaitSeconds(): Int {
-    TODO("Not yet implemented")
-  }
+  override fun getMinimumQuickLoginWaitSeconds(): Int = getAttribute(MINIMUM_QUICK_LOGIN_WAIT_SECONDS, 0)
 
-  override fun setMinimumQuickLoginWaitSeconds(p0: Int) {
-    TODO("Not yet implemented")
-  }
+  override fun setMinimumQuickLoginWaitSeconds(minimumQuickLoginWaitSeconds: Int) =
+    setAttribute(MINIMUM_QUICK_LOGIN_WAIT_SECONDS, minimumQuickLoginWaitSeconds)
 
-  override fun getQuickLoginCheckMilliSeconds(): Long {
-    TODO("Not yet implemented")
-  }
+  override fun getQuickLoginCheckMilliSeconds(): Long = getAttribute(QUICK_LOGIN_CHECK_MILLI_SECONDS, 0L)
 
-  override fun setQuickLoginCheckMilliSeconds(p0: Long) {
-    TODO("Not yet implemented")
-  }
+  override fun setQuickLoginCheckMilliSeconds(quickLoginCheckMilliSeconds: Long) =
+    setAttribute(QUICK_LOGIN_CHECK_MILLI_SECONDS, quickLoginCheckMilliSeconds)
 
-  override fun getMaxDeltaTimeSeconds(): Int {
-    TODO("Not yet implemented")
-  }
+  override fun getMaxDeltaTimeSeconds(): Int = getAttribute(MAX_DELTA_TIME_SECONDS, 0)
 
-  override fun setMaxDeltaTimeSeconds(p0: Int) {
-    TODO("Not yet implemented")
-  }
+  override fun setMaxDeltaTimeSeconds(maxDeltaTimeSeconds: Int) =
+    setAttribute(MAX_DELTA_TIME_SECONDS, maxDeltaTimeSeconds)
 
-  override fun getFailureFactor(): Int {
-    TODO("Not yet implemented")
-  }
+  override fun getFailureFactor(): Int = getAttribute(FAILURE_FACTOR, 0)
 
-  override fun setFailureFactor(p0: Int) {
-    TODO("Not yet implemented")
-  }
+  override fun setFailureFactor(failureFactor: Int) =
+    setAttribute(FAILURE_FACTOR, failureFactor)
 
-  override fun isVerifyEmail(): Boolean {
-    TODO("Not yet implemented")
-  }
+  override fun isVerifyEmail(): Boolean = getAttribute(VERIFY_EMAIL, false)
 
-  override fun setVerifyEmail(p0: Boolean) {
-    TODO("Not yet implemented")
-  }
+  override fun setVerifyEmail(verifyEmail: Boolean) =
+    setAttribute(VERIFY_EMAIL, verifyEmail)
 
-  override fun isLoginWithEmailAllowed(): Boolean {
-    TODO("Not yet implemented")
-  }
+  override fun isLoginWithEmailAllowed(): Boolean = getAttribute(LOGIN_WITH_EMAIL_ALLOWED, false)
 
-  override fun setLoginWithEmailAllowed(p0: Boolean) {
-    TODO("Not yet implemented")
-  }
+  override fun setLoginWithEmailAllowed(loginWithEmailAllowed: Boolean) =
+    setAttribute(LOGIN_WITH_EMAIL_ALLOWED, loginWithEmailAllowed)
 
-  override fun isDuplicateEmailsAllowed(): Boolean {
-    TODO("Not yet implemented")
-  }
+  override fun isDuplicateEmailsAllowed(): Boolean = getAttribute(IS_DUPLICATE_EMAILS_ALLOWED, false)
 
-  override fun setDuplicateEmailsAllowed(p0: Boolean) {
-    TODO("Not yet implemented")
-  }
+  override fun setDuplicateEmailsAllowed(duplicateEmailsAllowed: Boolean) =
+    setAttribute(IS_DUPLICATE_EMAILS_ALLOWED, duplicateEmailsAllowed)
 
-  override fun isResetPasswordAllowed(): Boolean {
-    TODO("Not yet implemented")
-  }
+  override fun isResetPasswordAllowed(): Boolean = getAttribute(IS_RESET_PASSWORD_ALLOWED, false)
 
-  override fun setResetPasswordAllowed(p0: Boolean) {
-    TODO("Not yet implemented")
-  }
+  override fun setResetPasswordAllowed(resetPasswordAllowed: Boolean) =
+    setAttribute(IS_RESET_PASSWORD_ALLOWED, resetPasswordAllowed)
 
-  override fun getDefaultSignatureAlgorithm(): String? {
-    TODO("Not yet implemented")
-  }
+  override fun getDefaultSignatureAlgorithm(): String? = getAttribute(DEFAULT_SIG_ALGORITHM)
 
-  override fun setDefaultSignatureAlgorithm(p0: String?) {
-    TODO("Not yet implemented")
-  }
+  override fun setDefaultSignatureAlgorithm(defaultSignatureAlgorithm: String?) =
+    setAttribute(DEFAULT_SIG_ALGORITHM, defaultSignatureAlgorithm)
 
-  override fun isRevokeRefreshToken(): Boolean {
-    TODO("Not yet implemented")
-  }
+  override fun isRevokeRefreshToken(): Boolean = getAttribute(IS_REVOKE_REFRESH_TOKEN, false)
 
-  override fun setRevokeRefreshToken(p0: Boolean) {
-    TODO("Not yet implemented")
-  }
+  override fun setRevokeRefreshToken(revokeRefreshToken: Boolean) =
+    setAttribute(IS_REVOKE_REFRESH_TOKEN, revokeRefreshToken)
 
-  override fun getRefreshTokenMaxReuse(): Int {
-    TODO("Not yet implemented")
-  }
+  override fun getRefreshTokenMaxReuse(): Int = getAttribute(REFRESH_TOKEN_MAX_REUSE, 0)
 
-  override fun setRefreshTokenMaxReuse(p0: Int) {
-    TODO("Not yet implemented")
-  }
+  override fun setRefreshTokenMaxReuse(refreshTokenMaxReuse: Int) =
+    setAttribute(REFRESH_TOKEN_MAX_REUSE, refreshTokenMaxReuse)
 
-  override fun getSsoSessionIdleTimeout(): Int {
-    TODO("Not yet implemented")
-  }
+  override fun getSsoSessionIdleTimeout(): Int = getAttribute(SSO_SESSION_IDLE_TIMEOUT, 0)
 
-  override fun setSsoSessionIdleTimeout(p0: Int) {
-    TODO("Not yet implemented")
-  }
+  override fun setSsoSessionIdleTimeout(ssoSessionIdleTimeout: Int) =
+    setAttribute(SSO_SESSION_IDLE_TIMEOUT, ssoSessionIdleTimeout)
 
-  override fun getSsoSessionMaxLifespan(): Int {
-    TODO("Not yet implemented")
-  }
+  override fun getSsoSessionMaxLifespan(): Int = getAttribute(SSO_SESSION_MAX_LIFESPAN, 0)
 
-  override fun setSsoSessionMaxLifespan(p0: Int) {
-    TODO("Not yet implemented")
-  }
+  override fun setSsoSessionMaxLifespan(ssoSessionMaxLifespan: Int) =
+    setAttribute(SSO_SESSION_MAX_LIFESPAN, ssoSessionMaxLifespan)
 
-  override fun getSsoSessionIdleTimeoutRememberMe(): Int {
-    TODO("Not yet implemented")
-  }
+  override fun getSsoSessionIdleTimeoutRememberMe(): Int = getAttribute(SSO_SESSION_IDLE_TIMEOUT_REMEMBER_ME, 0)
 
-  override fun setSsoSessionIdleTimeoutRememberMe(p0: Int) {
-    TODO("Not yet implemented")
-  }
+  override fun setSsoSessionIdleTimeoutRememberMe(ssoSessionIdleTimeoutRememberMe: Int) =
+    setAttribute(SSO_SESSION_IDLE_TIMEOUT_REMEMBER_ME, ssoSessionIdleTimeoutRememberMe)
 
-  override fun getSsoSessionMaxLifespanRememberMe(): Int {
-    TODO("Not yet implemented")
-  }
+  override fun getSsoSessionMaxLifespanRememberMe(): Int = getAttribute(SSO_SESSION_MAX_LIFESPAN_REMEMBER_ME, 0)
 
-  override fun setSsoSessionMaxLifespanRememberMe(p0: Int) {
-    TODO("Not yet implemented")
-  }
+  override fun setSsoSessionMaxLifespanRememberMe(ssoSessionMaxLifespanRememberMe: Int) =
+    setAttribute(SSO_SESSION_MAX_LIFESPAN_REMEMBER_ME, ssoSessionMaxLifespanRememberMe)
 
-  override fun getOfflineSessionIdleTimeout(): Int {
-    TODO("Not yet implemented")
-  }
+  override fun getOfflineSessionIdleTimeout(): Int = getAttribute(OFFLINE_SESSION_IDLE_TIMEOUT, 0)
 
-  override fun setOfflineSessionIdleTimeout(p0: Int) {
-    TODO("Not yet implemented")
-  }
+  override fun setOfflineSessionIdleTimeout(offlineSessionIdleTimeout: Int) =
+    setAttribute(OFFLINE_SESSION_IDLE_TIMEOUT, offlineSessionIdleTimeout)
 
-  override fun getAccessTokenLifespan(): Int {
-    TODO("Not yet implemented")
-  }
+  override fun getAccessTokenLifespan(): Int = getAttribute(ACCESS_TOKEN_LIFESPAN, 0)
 
-  override fun isOfflineSessionMaxLifespanEnabled(): Boolean {
-    TODO("Not yet implemented")
-  }
+  override fun setAccessTokenLifespan(accessTokenLifespan: Int) =
+    setAttribute(ACCESS_TOKEN_LIFESPAN, accessTokenLifespan)
 
-  override fun setOfflineSessionMaxLifespanEnabled(p0: Boolean) {
-    TODO("Not yet implemented")
-  }
+  override fun isOfflineSessionMaxLifespanEnabled(): Boolean =
+    getAttribute(IS_OFFLINE_SESSION_MAX_LIFESPAN_ENABLED, false)
 
-  override fun getOfflineSessionMaxLifespan(): Int {
-    TODO("Not yet implemented")
-  }
+  override fun setOfflineSessionMaxLifespanEnabled(offlineSessionMaxLifespanEnabled: Boolean) =
+    setAttribute(IS_OFFLINE_SESSION_MAX_LIFESPAN_ENABLED, offlineSessionMaxLifespanEnabled)
 
-  override fun setOfflineSessionMaxLifespan(p0: Int) {
-    TODO("Not yet implemented")
-  }
+  override fun getOfflineSessionMaxLifespan(): Int = getAttribute(OFFLINE_SESSION_MAX_LIFESPAN, 0)
 
-  override fun getClientSessionIdleTimeout(): Int {
-    TODO("Not yet implemented")
-  }
+  override fun setOfflineSessionMaxLifespan(offlineSessionMaxLifespan: Int) =
+    setAttribute(OFFLINE_SESSION_MAX_LIFESPAN, offlineSessionMaxLifespan)
 
-  override fun setClientSessionIdleTimeout(p0: Int) {
-    TODO("Not yet implemented")
-  }
+  override fun getClientSessionIdleTimeout(): Int = getAttribute(CLIENT_SESSION_IDLE_TIMEOUT, 0)
 
-  override fun getClientSessionMaxLifespan(): Int {
-    TODO("Not yet implemented")
-  }
+  override fun setClientSessionIdleTimeout(clientSessionIdleTimeout: Int) =
+    setAttribute(CLIENT_SESSION_IDLE_TIMEOUT, clientSessionIdleTimeout)
 
-  override fun setClientSessionMaxLifespan(p0: Int) {
-    TODO("Not yet implemented")
-  }
+  override fun getClientSessionMaxLifespan(): Int = getAttribute(CLIENT_SESSION_MAX_LIFESPAN, 0)
 
-  override fun getClientOfflineSessionIdleTimeout(): Int {
-    TODO("Not yet implemented")
-  }
+  override fun setClientSessionMaxLifespan(clientSessionMaxLifespan: Int) =
+    setAttribute(CLIENT_SESSION_MAX_LIFESPAN, clientSessionMaxLifespan)
 
-  override fun setClientOfflineSessionIdleTimeout(p0: Int) {
-    TODO("Not yet implemented")
-  }
+  override fun getClientOfflineSessionIdleTimeout(): Int = getAttribute(CLIENT_OFFLINE_SESSION_IDLE_TIMEOUT, 0)
 
-  override fun getClientOfflineSessionMaxLifespan(): Int {
-    TODO("Not yet implemented")
-  }
+  override fun setClientOfflineSessionIdleTimeout(clientOfflineSessionIdleTimeout: Int) =
+    setAttribute(CLIENT_OFFLINE_SESSION_IDLE_TIMEOUT, clientOfflineSessionIdleTimeout)
 
-  override fun setClientOfflineSessionMaxLifespan(p0: Int) {
-    TODO("Not yet implemented")
-  }
+  override fun getClientOfflineSessionMaxLifespan(): Int = getAttribute(CLIENT_OFFLINE_SESSION_MAX_LIFESPAN, 0)
 
-  override fun setAccessTokenLifespan(p0: Int) {
-    TODO("Not yet implemented")
-  }
+  override fun setClientOfflineSessionMaxLifespan(clientOfflineSessionMaxLifespan: Int) =
+    setAttribute(CLIENT_OFFLINE_SESSION_MAX_LIFESPAN, clientOfflineSessionMaxLifespan)
 
-  override fun getAccessTokenLifespanForImplicitFlow(): Int {
-    TODO("Not yet implemented")
-  }
+  override fun getAccessTokenLifespanForImplicitFlow(): Int = getAttribute(ACCESS_TOKEN_LIFESPAN_FOR_IMPLICIT_FLOW, 0)
 
-  override fun setAccessTokenLifespanForImplicitFlow(p0: Int) {
-    TODO("Not yet implemented")
-  }
+  override fun setAccessTokenLifespanForImplicitFlow(accessTokenLifespanForImplicitFlow: Int) =
+    setAttribute(ACCESS_TOKEN_LIFESPAN_FOR_IMPLICIT_FLOW, accessTokenLifespanForImplicitFlow)
 
-  override fun getAccessCodeLifespan(): Int {
-    TODO("Not yet implemented")
-  }
+  override fun getAccessCodeLifespan(): Int = getAttribute(ACCESS_CODE_LIFESPAN, 0)
 
-  override fun setAccessCodeLifespan(p0: Int) {
-    TODO("Not yet implemented")
-  }
+  override fun setAccessCodeLifespan(accessCodeLifespan: Int) =
+    setAttribute(ACCESS_CODE_LIFESPAN, accessCodeLifespan)
 
-  override fun getAccessCodeLifespanUserAction(): Int {
-    TODO("Not yet implemented")
-  }
+  override fun getAccessCodeLifespanUserAction(): Int = getAttribute(ACCESS_CODE_LIFESPAN_USER_ACTION, 0)
 
-  override fun setAccessCodeLifespanUserAction(p0: Int) {
-    TODO("Not yet implemented")
-  }
+  override fun setAccessCodeLifespanUserAction(accessCodeLifespanUserAction: Int) =
+    setAttribute(ACCESS_CODE_LIFESPAN_USER_ACTION, accessCodeLifespanUserAction)
 
-  override fun getOAuth2DeviceConfig(): OAuth2DeviceConfig? {
-    TODO("Not yet implemented")
-  }
+  override fun getOAuth2DeviceConfig(): OAuth2DeviceConfig = OAuth2DeviceConfig(this)
 
-  override fun getCibaPolicy(): CibaConfig? {
-    TODO("Not yet implemented")
-  }
+  override fun getCibaPolicy(): CibaConfig = CibaConfig(this)
 
-  override fun getParPolicy(): ParConfig? {
-    TODO("Not yet implemented")
-  }
+  override fun getParPolicy(): ParConfig = ParConfig(this)
 
-  override fun getUserActionTokenLifespans(): Map<String?, Int?>? {
-    TODO("Not yet implemented")
-  }
+  override fun getUserActionTokenLifespans(): Map<String, Int> =
+    realmService.getAttributesByRealmId(realm.id).filter {
+      it.name.startsWith("$ACTION_TOKEN_GENERATED_BY_USER_LIFESPAN.")
+    }.mapNotNull {
+      val value = it.value?.toInt() ?: return@mapNotNull null
 
-  override fun getAccessCodeLifespanLogin(): Int {
-    TODO("Not yet implemented")
-  }
+      it.name.removePrefix("$ACTION_TOKEN_GENERATED_BY_USER_LIFESPAN.") to value
+    }.toMap()
 
-  override fun setAccessCodeLifespanLogin(p0: Int) {
-    TODO("Not yet implemented")
-  }
+  override fun getAccessCodeLifespanLogin(): Int = getAttribute(ACCESS_CODE_LIFESPAN_LOGIN, 0)
 
-  override fun getActionTokenGeneratedByAdminLifespan(): Int {
-    TODO("Not yet implemented")
-  }
+  override fun setAccessCodeLifespanLogin(accessCodeLifespanLogin: Int) =
+    setAttribute(ACCESS_CODE_LIFESPAN_LOGIN, accessCodeLifespanLogin)
 
-  override fun setActionTokenGeneratedByAdminLifespan(p0: Int) {
-    TODO("Not yet implemented")
-  }
+  override fun getActionTokenGeneratedByAdminLifespan(): Int = getAttribute(ACTION_TOKEN_GENERATED_BY_ADMIN_LIFESPAN, 0)
 
-  override fun getActionTokenGeneratedByUserLifespan(): Int {
-    TODO("Not yet implemented")
-  }
+  override fun setActionTokenGeneratedByAdminLifespan(actionTokenGeneratedByAdminLifespan: Int) =
+    setAttribute(ACTION_TOKEN_GENERATED_BY_ADMIN_LIFESPAN, actionTokenGeneratedByAdminLifespan)
 
-  override fun setActionTokenGeneratedByUserLifespan(p0: Int) {
-    TODO("Not yet implemented")
-  }
+  override fun getActionTokenGeneratedByUserLifespan(): Int =
+    getAttribute(ACTION_TOKEN_GENERATED_BY_USER_LIFESPAN, getAccessCodeLifespanUserAction())
 
-  override fun getActionTokenGeneratedByUserLifespan(p0: String?): Int {
-    TODO("Not yet implemented")
-  }
+  override fun setActionTokenGeneratedByUserLifespan(actionTokenGeneratedByUserLifespan: Int) =
+    setAttribute(ACTION_TOKEN_GENERATED_BY_USER_LIFESPAN, actionTokenGeneratedByUserLifespan)
 
-  override fun setActionTokenGeneratedByUserLifespan(p0: String?, p1: Int?) {
-    TODO("Not yet implemented")
-  }
+  override fun getActionTokenGeneratedByUserLifespan(actionTokenType: String?): Int {
+    val attributeName = "$ACTION_TOKEN_GENERATED_BY_USER_LIFESPAN.$actionTokenType"
 
-  override fun getRequiredCredentialsStream(): Stream<RequiredCredentialModel?>? {
-    TODO("Not yet implemented")
+    if (actionTokenType == null || getAttribute(attributeName) == null) {
+      return getActionTokenGeneratedByUserLifespan()
+    }
+    return getAttribute(
+      attributeName,
+      getAccessCodeLifespanUserAction()
+    )
   }
 
-  override fun addRequiredCredential(p0: String?) {
-    TODO("Not yet implemented")
+  override fun setActionTokenGeneratedByUserLifespan(actionTokenType: String?, seconds: Int?) {
+    if (!actionTokenType.isNullOrEmpty() && seconds != null) {
+      setAttribute("$ACTION_TOKEN_GENERATED_BY_USER_LIFESPAN.$actionTokenType", seconds.toString())
+    }
   }
 
-  override fun getPasswordPolicy(): PasswordPolicy? {
-    TODO("Not yet implemented")
+  override fun getRequiredCredentialsStream(): Stream<RequiredCredentialModel> {
+    TODO()
   }
 
-  override fun setPasswordPolicy(p0: PasswordPolicy?) {
+  override fun addRequiredCredential(credentialType: String?) {
     TODO("Not yet implemented")
   }
+
+  override fun getPasswordPolicy(): PasswordPolicy? = PasswordPolicy.parse(session, getAttribute(PASSWORD_POLICY))
+
+  override fun setPasswordPolicy(passwordPolicy: PasswordPolicy?) =
+    setAttribute(PASSWORD_POLICY, passwordPolicy?.toString())
 
   override fun getOTPPolicy(): OTPPolicy? {
     TODO("Not yet implemented")
   }
 
-  override fun setOTPPolicy(p0: OTPPolicy?) {
+  override fun setOTPPolicy(otpPolicy: OTPPolicy?) {
     TODO("Not yet implemented")
   }
 
@@ -436,7 +347,7 @@ class YdbRealmAdapter(
     TODO("Not yet implemented")
   }
 
-  override fun setWebAuthnPolicy(p0: WebAuthnPolicy?) {
+  override fun setWebAuthnPolicy(webAuthnPolicy: WebAuthnPolicy?) {
     TODO("Not yet implemented")
   }
 
@@ -444,11 +355,11 @@ class YdbRealmAdapter(
     TODO("Not yet implemented")
   }
 
-  override fun setWebAuthnPolicyPasswordless(p0: WebAuthnPolicy?) {
+  override fun setWebAuthnPolicyPasswordless(webAuthnPolicy: WebAuthnPolicy?) {
     TODO("Not yet implemented")
   }
 
-  override fun getRoleById(p0: String?): RoleModel? {
+  override fun getRoleById(roleId: String?): RoleModel? {
     TODO("Not yet implemented")
   }
 
@@ -456,11 +367,11 @@ class YdbRealmAdapter(
     TODO("Not yet implemented")
   }
 
-  override fun addDefaultGroup(p0: GroupModel?) {
+  override fun addDefaultGroup(groupModel: GroupModel?) {
     TODO("Not yet implemented")
   }
 
-  override fun removeDefaultGroup(p0: GroupModel?) {
+  override fun removeDefaultGroup(groupModel: GroupModel?) {
     TODO("Not yet implemented")
   }
 
@@ -468,10 +379,7 @@ class YdbRealmAdapter(
     TODO("Not yet implemented")
   }
 
-  override fun getClientsStream(
-    p0: Int?,
-    p1: Int?
-  ): Stream<ClientModel?>? {
+  override fun getClientsStream(firstResult: Int?, maxResults: Int?): Stream<ClientModel?>? {
     TODO("Not yet implemented")
   }
 
@@ -483,51 +391,51 @@ class YdbRealmAdapter(
     TODO("Not yet implemented")
   }
 
-  override fun addClient(p0: String?): ClientModel? {
+  override fun addClient(clientId: String?): ClientModel? {
     TODO("Not yet implemented")
   }
 
-  override fun addClient(p0: String?, p1: String?): ClientModel? {
+  override fun addClient(id: String?, clientId: String?): ClientModel? {
     TODO("Not yet implemented")
   }
 
-  override fun removeClient(p0: String?): Boolean {
+  override fun removeClient(id: String?): Boolean {
     TODO("Not yet implemented")
   }
 
-  override fun getClientById(p0: String?): ClientModel? {
+  override fun getClientById(id: String?): ClientModel? {
     TODO("Not yet implemented")
   }
 
-  override fun getClientByClientId(p0: String?): ClientModel? {
+  override fun getClientByClientId(clientId: String?): ClientModel? {
     TODO("Not yet implemented")
   }
 
   override fun searchClientByClientIdStream(
-    p0: String?,
-    p1: Int?,
-    p2: Int?
+    clientId: String?,
+    firstResult: Int?,
+    maxResults: Int?
   ): Stream<ClientModel?>? {
     TODO("Not yet implemented")
   }
 
   override fun searchClientByAttributes(
-    p0: Map<String?, String?>?,
-    p1: Int?,
-    p2: Int?
+    attributes: Map<String?, String?>?,
+    firstResult: Int?,
+    maxResults: Int?
   ): Stream<ClientModel?>? {
     TODO("Not yet implemented")
   }
 
   override fun searchClientByAuthenticationFlowBindingOverrides(
-    p0: Map<String?, String?>?,
-    p1: Int?,
-    p2: Int?
+    overrides: Map<String?, String?>?,
+    firstResult: Int?,
+    maxResults: Int?
   ): Stream<ClientModel?>? {
     TODO("Not yet implemented")
   }
 
-  override fun updateRequiredCredentials(p0: Set<String?>?) {
+  override fun updateRequiredCredentials(credentialTypes: Set<String?>?) {
     TODO("Not yet implemented")
   }
 
@@ -535,7 +443,7 @@ class YdbRealmAdapter(
     TODO("Not yet implemented")
   }
 
-  override fun setBrowserSecurityHeaders(p0: Map<String?, String?>?) {
+  override fun setBrowserSecurityHeaders(browserSecurityHeaders: Map<String?, String?>?) {
     TODO("Not yet implemented")
   }
 
@@ -543,7 +451,7 @@ class YdbRealmAdapter(
     TODO("Not yet implemented")
   }
 
-  override fun setSmtpConfig(p0: Map<String?, String?>?) {
+  override fun setSmtpConfig(smtpConfig: Map<String?, String?>?) {
     TODO("Not yet implemented")
   }
 
@@ -551,7 +459,7 @@ class YdbRealmAdapter(
     TODO("Not yet implemented")
   }
 
-  override fun setBrowserFlow(p0: AuthenticationFlowModel?) {
+  override fun setBrowserFlow(browserFlow: AuthenticationFlowModel?) {
     TODO("Not yet implemented")
   }
 
@@ -559,7 +467,7 @@ class YdbRealmAdapter(
     TODO("Not yet implemented")
   }
 
-  override fun setRegistrationFlow(p0: AuthenticationFlowModel?) {
+  override fun setRegistrationFlow(registrationFlow: AuthenticationFlowModel?) {
     TODO("Not yet implemented")
   }
 
@@ -567,7 +475,7 @@ class YdbRealmAdapter(
     TODO("Not yet implemented")
   }
 
-  override fun setDirectGrantFlow(p0: AuthenticationFlowModel?) {
+  override fun setDirectGrantFlow(directGrantFlow: AuthenticationFlowModel?) {
     TODO("Not yet implemented")
   }
 
@@ -575,7 +483,7 @@ class YdbRealmAdapter(
     TODO("Not yet implemented")
   }
 
-  override fun setResetCredentialsFlow(p0: AuthenticationFlowModel?) {
+  override fun setResetCredentialsFlow(resetCredentialsFlow: AuthenticationFlowModel?) {
     TODO("Not yet implemented")
   }
 
@@ -583,7 +491,7 @@ class YdbRealmAdapter(
     TODO("Not yet implemented")
   }
 
-  override fun setClientAuthenticationFlow(p0: AuthenticationFlowModel?) {
+  override fun setClientAuthenticationFlow(clientAuthenticationFlow: AuthenticationFlowModel?) {
     TODO("Not yet implemented")
   }
 
@@ -591,7 +499,7 @@ class YdbRealmAdapter(
     TODO("Not yet implemented")
   }
 
-  override fun setDockerAuthenticationFlow(p0: AuthenticationFlowModel?) {
+  override fun setDockerAuthenticationFlow(dockerAuthenticationFlow: AuthenticationFlowModel?) {
     TODO("Not yet implemented")
   }
 
@@ -599,7 +507,7 @@ class YdbRealmAdapter(
     TODO("Not yet implemented")
   }
 
-  override fun setFirstBrokerLoginFlow(p0: AuthenticationFlowModel?) {
+  override fun setFirstBrokerLoginFlow(firstBrokerLoginFlow: AuthenticationFlowModel?) {
     TODO("Not yet implemented")
   }
 
@@ -607,47 +515,47 @@ class YdbRealmAdapter(
     TODO("Not yet implemented")
   }
 
-  override fun getFlowByAlias(p0: String?): AuthenticationFlowModel? {
+  override fun getFlowByAlias(alias: String?): AuthenticationFlowModel? {
     TODO("Not yet implemented")
   }
 
-  override fun addAuthenticationFlow(p0: AuthenticationFlowModel?): AuthenticationFlowModel? {
+  override fun addAuthenticationFlow(authenticationFlow: AuthenticationFlowModel?): AuthenticationFlowModel? {
     TODO("Not yet implemented")
   }
 
-  override fun getAuthenticationFlowById(p0: String?): AuthenticationFlowModel? {
+  override fun getAuthenticationFlowById(id: String?): AuthenticationFlowModel? {
     TODO("Not yet implemented")
   }
 
-  override fun removeAuthenticationFlow(p0: AuthenticationFlowModel?) {
+  override fun removeAuthenticationFlow(authenticationFlow: AuthenticationFlowModel?) {
     TODO("Not yet implemented")
   }
 
-  override fun updateAuthenticationFlow(p0: AuthenticationFlowModel?) {
+  override fun updateAuthenticationFlow(authenticationFlow: AuthenticationFlowModel?) {
     TODO("Not yet implemented")
   }
 
-  override fun getAuthenticationExecutionsStream(p0: String?): Stream<AuthenticationExecutionModel?>? {
+  override fun getAuthenticationExecutionsStream(flowId: String?): Stream<AuthenticationExecutionModel?>? {
     TODO("Not yet implemented")
   }
 
-  override fun getAuthenticationExecutionById(p0: String?): AuthenticationExecutionModel? {
+  override fun getAuthenticationExecutionById(id: String?): AuthenticationExecutionModel? {
     TODO("Not yet implemented")
   }
 
-  override fun getAuthenticationExecutionByFlowId(p0: String?): AuthenticationExecutionModel? {
+  override fun getAuthenticationExecutionByFlowId(flowId: String?): AuthenticationExecutionModel? {
     TODO("Not yet implemented")
   }
 
-  override fun addAuthenticatorExecution(p0: AuthenticationExecutionModel?): AuthenticationExecutionModel? {
+  override fun addAuthenticatorExecution(authenticationExecution: AuthenticationExecutionModel?): AuthenticationExecutionModel? {
     TODO("Not yet implemented")
   }
 
-  override fun updateAuthenticatorExecution(p0: AuthenticationExecutionModel?) {
+  override fun updateAuthenticatorExecution(authenticationExecution: AuthenticationExecutionModel?) {
     TODO("Not yet implemented")
   }
 
-  override fun removeAuthenticatorExecution(p0: AuthenticationExecutionModel?) {
+  override fun removeAuthenticatorExecution(authenticationExecution: AuthenticationExecutionModel?) {
     TODO("Not yet implemented")
   }
 
@@ -655,39 +563,39 @@ class YdbRealmAdapter(
     TODO("Not yet implemented")
   }
 
-  override fun addAuthenticatorConfig(p0: AuthenticatorConfigModel?): AuthenticatorConfigModel? {
+  override fun addAuthenticatorConfig(authenticatorConfig: AuthenticatorConfigModel?): AuthenticatorConfigModel? {
     TODO("Not yet implemented")
   }
 
-  override fun updateAuthenticatorConfig(p0: AuthenticatorConfigModel?) {
+  override fun updateAuthenticatorConfig(authenticatorConfig: AuthenticatorConfigModel?) {
     TODO("Not yet implemented")
   }
 
-  override fun removeAuthenticatorConfig(p0: AuthenticatorConfigModel?) {
+  override fun removeAuthenticatorConfig(authenticatorConfig: AuthenticatorConfigModel?) {
     TODO("Not yet implemented")
   }
 
-  override fun getAuthenticatorConfigById(p0: String?): AuthenticatorConfigModel? {
+  override fun getAuthenticatorConfigById(id: String?): AuthenticatorConfigModel? {
     TODO("Not yet implemented")
   }
 
-  override fun getAuthenticatorConfigByAlias(p0: String?): AuthenticatorConfigModel? {
+  override fun getAuthenticatorConfigByAlias(alias: String?): AuthenticatorConfigModel? {
     TODO("Not yet implemented")
   }
 
-  override fun getRequiredActionConfigById(p0: String?): RequiredActionConfigModel? {
+  override fun getRequiredActionConfigById(id: String?): RequiredActionConfigModel? {
     TODO("Not yet implemented")
   }
 
-  override fun getRequiredActionConfigByAlias(p0: String?): RequiredActionConfigModel? {
+  override fun getRequiredActionConfigByAlias(alias: String?): RequiredActionConfigModel? {
     TODO("Not yet implemented")
   }
 
-  override fun removeRequiredActionProviderConfig(p0: RequiredActionConfigModel?) {
+  override fun removeRequiredActionProviderConfig(requiredActionConfig: RequiredActionConfigModel?) {
     TODO("Not yet implemented")
   }
 
-  override fun updateRequiredActionConfig(p0: RequiredActionConfigModel?) {
+  override fun updateRequiredActionConfig(requiredActionConfig: RequiredActionConfigModel?) {
     TODO("Not yet implemented")
   }
 
@@ -699,23 +607,23 @@ class YdbRealmAdapter(
     TODO("Not yet implemented")
   }
 
-  override fun addRequiredActionProvider(p0: RequiredActionProviderModel?): RequiredActionProviderModel? {
+  override fun addRequiredActionProvider(requiredActionProvider: RequiredActionProviderModel?): RequiredActionProviderModel? {
     TODO("Not yet implemented")
   }
 
-  override fun updateRequiredActionProvider(p0: RequiredActionProviderModel?) {
+  override fun updateRequiredActionProvider(requiredActionProvider: RequiredActionProviderModel?) {
     TODO("Not yet implemented")
   }
 
-  override fun removeRequiredActionProvider(p0: RequiredActionProviderModel?) {
+  override fun removeRequiredActionProvider(requiredActionProvider: RequiredActionProviderModel?) {
     TODO("Not yet implemented")
   }
 
-  override fun getRequiredActionProviderById(p0: String?): RequiredActionProviderModel? {
+  override fun getRequiredActionProviderById(id: String?): RequiredActionProviderModel? {
     TODO("Not yet implemented")
   }
 
-  override fun getRequiredActionProviderByAlias(p0: String?): RequiredActionProviderModel? {
+  override fun getRequiredActionProviderByAlias(alias: String?): RequiredActionProviderModel? {
     TODO("Not yet implemented")
   }
 
@@ -723,19 +631,19 @@ class YdbRealmAdapter(
     TODO("Not yet implemented")
   }
 
-  override fun getIdentityProviderByAlias(p0: String?): IdentityProviderModel? {
+  override fun getIdentityProviderByAlias(alias: String?): IdentityProviderModel? {
     TODO("Not yet implemented")
   }
 
-  override fun addIdentityProvider(p0: IdentityProviderModel?) {
+  override fun addIdentityProvider(identityProvider: IdentityProviderModel?) {
     TODO("Not yet implemented")
   }
 
-  override fun removeIdentityProviderByAlias(p0: String?) {
+  override fun removeIdentityProviderByAlias(alias: String?) {
     TODO("Not yet implemented")
   }
 
-  override fun updateIdentityProvider(p0: IdentityProviderModel?) {
+  override fun updateIdentityProvider(identityProvider: IdentityProviderModel?) {
     TODO("Not yet implemented")
   }
 
@@ -743,61 +651,55 @@ class YdbRealmAdapter(
     TODO("Not yet implemented")
   }
 
-  override fun getIdentityProviderMappersByAliasStream(p0: String?): Stream<IdentityProviderMapperModel?>? {
+  override fun getIdentityProviderMappersByAliasStream(brokerAlias: String?): Stream<IdentityProviderMapperModel?>? {
     TODO("Not yet implemented")
   }
 
-  override fun addIdentityProviderMapper(p0: IdentityProviderMapperModel?): IdentityProviderMapperModel? {
+  override fun addIdentityProviderMapper(identityProviderMapper: IdentityProviderMapperModel?): IdentityProviderMapperModel? {
     TODO("Not yet implemented")
   }
 
-  override fun removeIdentityProviderMapper(p0: IdentityProviderMapperModel?) {
+  override fun removeIdentityProviderMapper(identityProviderMapper: IdentityProviderMapperModel?) {
     TODO("Not yet implemented")
   }
 
-  override fun updateIdentityProviderMapper(p0: IdentityProviderMapperModel?) {
+  override fun updateIdentityProviderMapper(identityProviderMapper: IdentityProviderMapperModel?) {
     TODO("Not yet implemented")
   }
 
-  override fun getIdentityProviderMapperById(p0: String?): IdentityProviderMapperModel? {
+  override fun getIdentityProviderMapperById(id: String?): IdentityProviderMapperModel? {
     TODO("Not yet implemented")
   }
 
-  override fun getIdentityProviderMapperByName(
-    p0: String?,
-    p1: String?
-  ): IdentityProviderMapperModel? {
+  override fun getIdentityProviderMapperByName(brokerAlias: String?, name: String?): IdentityProviderMapperModel? {
     TODO("Not yet implemented")
   }
 
-  override fun addComponentModel(p0: ComponentModel?): ComponentModel? {
+  override fun addComponentModel(component: ComponentModel?): ComponentModel? {
     TODO("Not yet implemented")
   }
 
-  override fun importComponentModel(p0: ComponentModel?): ComponentModel? {
+  override fun importComponentModel(component: ComponentModel?): ComponentModel? {
     TODO("Not yet implemented")
   }
 
-  override fun updateComponent(p0: ComponentModel?) {
+  override fun updateComponent(component: ComponentModel?) {
     TODO("Not yet implemented")
   }
 
-  override fun removeComponent(p0: ComponentModel?) {
+  override fun removeComponent(component: ComponentModel?) {
     TODO("Not yet implemented")
   }
 
-  override fun removeComponents(p0: String?) {
+  override fun removeComponents(parentId: String?) {
     TODO("Not yet implemented")
   }
 
-  override fun getComponentsStream(
-    p0: String?,
-    p1: String?
-  ): Stream<ComponentModel?>? {
+  override fun getComponentsStream(parentId: String?, providerType: String?): Stream<ComponentModel?>? {
     TODO("Not yet implemented")
   }
 
-  override fun getComponentsStream(p0: String?): Stream<ComponentModel?>? {
+  override fun getComponentsStream(parentId: String?): Stream<ComponentModel?>? {
     TODO("Not yet implemented")
   }
 
@@ -805,71 +707,43 @@ class YdbRealmAdapter(
     TODO("Not yet implemented")
   }
 
-  override fun getComponent(p0: String?): ComponentModel? {
+  override fun getComponent(id: String?): ComponentModel? {
     TODO("Not yet implemented")
   }
 
-  override fun getLoginTheme(): String? {
-    TODO("Not yet implemented")
-  }
+  override fun getLoginTheme(): String? = getAttribute(LOGIN_THEME)
 
-  override fun setLoginTheme(p0: String?) {
-    TODO("Not yet implemented")
-  }
+  override fun setLoginTheme(loginTheme: String?) = setAttribute(LOGIN_THEME, loginTheme)
 
-  override fun getAccountTheme(): String? {
-    TODO("Not yet implemented")
-  }
+  override fun getAccountTheme(): String? = getAttribute(ACCOUNT_THEME)
 
-  override fun setAccountTheme(p0: String?) {
-    TODO("Not yet implemented")
-  }
+  override fun setAccountTheme(accountTheme: String?) = setAttribute(ACCOUNT_THEME, accountTheme)
 
-  override fun getAdminTheme(): String? {
-    TODO("Not yet implemented")
-  }
+  override fun getAdminTheme(): String? = getAttribute(ADMIN_THEME)
 
-  override fun setAdminTheme(p0: String?) {
-    TODO("Not yet implemented")
-  }
+  override fun setAdminTheme(adminTheme: String?) = setAttribute(ADMIN_THEME, adminTheme)
 
-  override fun getEmailTheme(): String? {
-    TODO("Not yet implemented")
-  }
+  override fun getEmailTheme(): String? = getAttribute(EMAIL_THEME)
 
-  override fun setEmailTheme(p0: String?) {
-    TODO("Not yet implemented")
-  }
+  override fun setEmailTheme(emailTheme: String?) = setAttribute(EMAIL_THEME, emailTheme)
 
-  override fun getNotBefore(): Int {
-    TODO("Not yet implemented")
-  }
+  override fun getNotBefore(): Int = getAttribute(NOT_BEFORE, 0)
 
-  override fun setNotBefore(p0: Int) {
-    TODO("Not yet implemented")
-  }
+  override fun setNotBefore(notBefore: Int) = setAttribute(NOT_BEFORE, notBefore)
 
-  override fun isEventsEnabled(): Boolean {
-    TODO("Not yet implemented")
-  }
+  override fun isEventsEnabled(): Boolean = getAttribute(IS_EVENTS_ENABLED, false)
 
-  override fun setEventsEnabled(p0: Boolean) {
-    TODO("Not yet implemented")
-  }
+  override fun setEventsEnabled(eventsEnabled: Boolean) = setAttribute(IS_EVENTS_ENABLED, eventsEnabled)
 
-  override fun getEventsExpiration(): Long {
-    TODO("Not yet implemented")
-  }
+  override fun getEventsExpiration(): Long = getAttribute(EVENTS_EXPIRATION, 0L)
 
-  override fun setEventsExpiration(p0: Long) {
-    TODO("Not yet implemented")
-  }
+  override fun setEventsExpiration(eventsExpiration: Long) = setAttribute(EVENTS_EXPIRATION, eventsExpiration)
 
   override fun getEventsListenersStream(): Stream<String?>? {
     TODO("Not yet implemented")
   }
 
-  override fun setEventsListeners(p0: Set<String?>?) {
+  override fun setEventsListeners(eventsListeners: Set<String?>?) {
     TODO("Not yet implemented")
   }
 
@@ -877,31 +751,25 @@ class YdbRealmAdapter(
     TODO("Not yet implemented")
   }
 
-  override fun setEnabledEventTypes(p0: Set<String?>?) {
+  override fun setEnabledEventTypes(enabledEventTypes: Set<String?>?) {
     TODO("Not yet implemented")
   }
 
-  override fun isAdminEventsEnabled(): Boolean {
-    TODO("Not yet implemented")
-  }
+  override fun isAdminEventsEnabled(): Boolean = getAttribute(IS_ADMIN_EVENTS_ENABLED, false)
 
-  override fun setAdminEventsEnabled(p0: Boolean) {
-    TODO("Not yet implemented")
-  }
+  override fun setAdminEventsEnabled(adminEventsEnabled: Boolean) =
+    setAttribute(IS_ADMIN_EVENTS_ENABLED, adminEventsEnabled)
 
-  override fun isAdminEventsDetailsEnabled(): Boolean {
-    TODO("Not yet implemented")
-  }
+  override fun isAdminEventsDetailsEnabled(): Boolean = getAttribute(IS_ADMIN_EVENTS_DETAILS_ENABLED, false)
 
-  override fun setAdminEventsDetailsEnabled(p0: Boolean) {
-    TODO("Not yet implemented")
-  }
+  override fun setAdminEventsDetailsEnabled(adminEventsDetailsEnabled: Boolean) =
+    setAttribute(IS_ADMIN_EVENTS_DETAILS_ENABLED, adminEventsDetailsEnabled)
 
   override fun getMasterAdminClient(): ClientModel? {
     TODO("Not yet implemented")
   }
 
-  override fun setMasterAdminClient(p0: ClientModel?) {
+  override fun setMasterAdminClient(masterAdminClient: ClientModel?) {
     TODO("Not yet implemented")
   }
 
@@ -909,7 +777,7 @@ class YdbRealmAdapter(
     TODO("Not yet implemented")
   }
 
-  override fun setDefaultRole(p0: RoleModel?) {
+  override fun setDefaultRole(defaultRole: RoleModel?) {
     TODO("Not yet implemented")
   }
 
@@ -917,7 +785,7 @@ class YdbRealmAdapter(
     TODO("Not yet implemented")
   }
 
-  override fun setAdminPermissionsClient(p0: ClientModel?) {
+  override fun setAdminPermissionsClient(adminPermissionsClient: ClientModel?) {
     TODO("Not yet implemented")
   }
 
@@ -925,39 +793,28 @@ class YdbRealmAdapter(
     TODO("Not yet implemented")
   }
 
-  override fun isInternationalizationEnabled(): Boolean {
-    TODO("Not yet implemented")
-  }
+  override fun isInternationalizationEnabled(): Boolean = getAttribute(IS_INTERNATIONALIZATION_ENABLED, false)
 
-  override fun setInternationalizationEnabled(p0: Boolean) {
-    TODO("Not yet implemented")
-  }
+  override fun setInternationalizationEnabled(internationalizationEnabled: Boolean) =
+    setAttribute(IS_INTERNATIONALIZATION_ENABLED, internationalizationEnabled)
 
   override fun getSupportedLocalesStream(): Stream<String?>? {
     TODO("Not yet implemented")
   }
 
-  override fun setSupportedLocales(p0: Set<String?>?) {
+  override fun setSupportedLocales(supportedLocales: Set<String?>?) {
     TODO("Not yet implemented")
   }
 
-  override fun getDefaultLocale(): String? {
+  override fun getDefaultLocale(): String? = getAttribute(DEFAULT_LOCALE)
+
+  override fun setDefaultLocale(defaultLocale: String?) = setAttribute(DEFAULT_LOCALE, defaultLocale)
+
+  override fun createGroup(id: String?, name: String?, toParent: GroupModel?): GroupModel? {
     TODO("Not yet implemented")
   }
 
-  override fun setDefaultLocale(p0: String?) {
-    TODO("Not yet implemented")
-  }
-
-  override fun createGroup(
-    p0: String?,
-    p1: String?,
-    p2: GroupModel?
-  ): GroupModel? {
-    TODO("Not yet implemented")
-  }
-
-  override fun getGroupById(p0: String?): GroupModel? {
+  override fun getGroupById(id: String?): GroupModel? {
     TODO("Not yet implemented")
   }
 
@@ -965,11 +822,11 @@ class YdbRealmAdapter(
     TODO("Not yet implemented")
   }
 
-  override fun getGroupsCount(p0: Boolean?): Long? {
+  override fun getGroupsCount(onlyTopGroups: Boolean?): Long? {
     TODO("Not yet implemented")
   }
 
-  override fun getGroupsCountByNameContaining(p0: String?): Long? {
+  override fun getGroupsCountByNameContaining(search: String?): Long? {
     TODO("Not yet implemented")
   }
 
@@ -977,18 +834,15 @@ class YdbRealmAdapter(
     TODO("Not yet implemented")
   }
 
-  override fun getTopLevelGroupsStream(
-    p0: Int?,
-    p1: Int?
-  ): Stream<GroupModel?>? {
+  override fun getTopLevelGroupsStream(first: Int?, max: Int?): Stream<GroupModel?>? {
     TODO("Not yet implemented")
   }
 
-  override fun removeGroup(p0: GroupModel?): Boolean {
+  override fun removeGroup(groupModel: GroupModel?): Boolean {
     TODO("Not yet implemented")
   }
 
-  override fun moveGroup(p0: GroupModel?, p1: GroupModel?) {
+  override fun moveGroup(groupModel: GroupModel?, toParent: GroupModel?) {
     TODO("Not yet implemented")
   }
 
@@ -996,38 +850,35 @@ class YdbRealmAdapter(
     TODO("Not yet implemented")
   }
 
-  override fun addClientScope(p0: String?): ClientScopeModel? {
+  override fun addClientScope(name: String?): ClientScopeModel? {
     TODO("Not yet implemented")
   }
 
-  override fun addClientScope(p0: String?, p1: String?): ClientScopeModel? {
+  override fun addClientScope(id: String?, name: String?): ClientScopeModel? {
     TODO("Not yet implemented")
   }
 
-  override fun removeClientScope(p0: String?): Boolean {
+  override fun removeClientScope(id: String?): Boolean {
     TODO("Not yet implemented")
   }
 
-  override fun getClientScopeById(p0: String?): ClientScopeModel? {
+  override fun getClientScopeById(id: String?): ClientScopeModel? {
     TODO("Not yet implemented")
   }
 
-  override fun addDefaultClientScope(p0: ClientScopeModel?, p1: Boolean) {
+  override fun addDefaultClientScope(clientScope: ClientScopeModel?, defaultScope: Boolean) {
     TODO("Not yet implemented")
   }
 
-  override fun removeDefaultClientScope(p0: ClientScopeModel?) {
+  override fun removeDefaultClientScope(clientScope: ClientScopeModel?) {
     TODO("Not yet implemented")
   }
 
-  override fun createOrUpdateRealmLocalizationTexts(
-    p0: String?,
-    p1: Map<String?, String?>?
-  ) {
+  override fun createOrUpdateRealmLocalizationTexts(locale: String?, localizationTexts: Map<String?, String?>?) {
     TODO("Not yet implemented")
   }
 
-  override fun removeRealmLocalizationTexts(p0: String?): Boolean {
+  override fun removeRealmLocalizationTexts(locale: String?): Boolean {
     TODO("Not yet implemented")
   }
 
@@ -1035,26 +886,23 @@ class YdbRealmAdapter(
     TODO("Not yet implemented")
   }
 
-  override fun getRealmLocalizationTextsByLocale(p0: String?): Map<String?, String?>? {
+  override fun getRealmLocalizationTextsByLocale(locale: String?): Map<String?, String?>? {
     TODO("Not yet implemented")
   }
 
-  override fun getDefaultClientScopesStream(p0: Boolean): Stream<ClientScopeModel?>? {
+  override fun getDefaultClientScopesStream(defaultScope: Boolean): Stream<ClientScopeModel?>? {
     TODO("Not yet implemented")
   }
 
-  override fun createClientInitialAccessModel(
-    p0: Int,
-    p1: Int
-  ): ClientInitialAccessModel? {
+  override fun createClientInitialAccessModel(expiration: Int, count: Int): ClientInitialAccessModel? {
     TODO("Not yet implemented")
   }
 
-  override fun getClientInitialAccessModel(p0: String?): ClientInitialAccessModel? {
+  override fun getClientInitialAccessModel(id: String?): ClientInitialAccessModel? {
     TODO("Not yet implemented")
   }
 
-  override fun removeClientInitialAccessModel(p0: String?) {
+  override fun removeClientInitialAccessModel(id: String?) {
     TODO("Not yet implemented")
   }
 
@@ -1062,23 +910,23 @@ class YdbRealmAdapter(
     TODO("Not yet implemented")
   }
 
-  override fun decreaseRemainingCount(p0: ClientInitialAccessModel?) {
+  override fun decreaseRemainingCount(clientInitialAccess: ClientInitialAccessModel?) {
     TODO("Not yet implemented")
   }
 
-  override fun getRole(p0: String?): RoleModel? {
+  override fun getRole(name: String?): RoleModel? {
     TODO("Not yet implemented")
   }
 
-  override fun addRole(p0: String?): RoleModel? {
+  override fun addRole(name: String?): RoleModel? {
     TODO("Not yet implemented")
   }
 
-  override fun addRole(p0: String?, p1: String?): RoleModel? {
+  override fun addRole(id: String?, name: String?): RoleModel? {
     TODO("Not yet implemented")
   }
 
-  override fun removeRole(p0: RoleModel?): Boolean {
+  override fun removeRole(roleModel: RoleModel?): Boolean {
     TODO("Not yet implemented")
   }
 
@@ -1086,22 +934,23 @@ class YdbRealmAdapter(
     TODO("Not yet implemented")
   }
 
-  override fun getRolesStream(
-    p0: Int?,
-    p1: Int?
-  ): Stream<RoleModel?>? {
+  override fun getRolesStream(firstResult: Int?, maxResults: Int?): Stream<RoleModel?>? {
     TODO("Not yet implemented")
   }
 
-  override fun searchForRolesStream(
-    p0: String?,
-    p1: Int?,
-    p2: Int?
-  ): Stream<RoleModel?>? {
+  override fun searchForRolesStream(search: String?, first: Int?, max: Int?): Stream<RoleModel?>? {
     TODO("Not yet implemented")
   }
 
-  companion object {
+  private fun setAttribute(name: String?, values: List<String>?) {
+    if (name == null || values == null || name.startsWith(READONLY_ATTRIBUTE_PREFIX)) {
+      return
+    }
+
+    realmService.updateRealmAttributes(realm.id, name, values)
+  }
+
+  private companion object {
     const val DISPLAY_NAME: String = INTERNAL_ATTRIBUTE_PREFIX + "displayName"
     const val DISPLAY_NAME_HTML: String = INTERNAL_ATTRIBUTE_PREFIX + "displayNameHtml"
     const val IS_ENABLED: String = INTERNAL_ATTRIBUTE_PREFIX + "enabled"

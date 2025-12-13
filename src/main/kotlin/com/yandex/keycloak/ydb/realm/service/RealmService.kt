@@ -5,6 +5,9 @@ import com.yandex.keycloak.ydb.realm.RealmMapper.toPojo
 import com.yandex.keycloak.ydb.realm.domain.Realm
 import com.yandex.keycloak.ydb.realm.persistense.RealmAttributeRepository
 import com.yandex.keycloak.ydb.realm.persistense.RealmRepository
+import jooq.generated.default_schema.tables.pojos.RealmAttributes
+import org.jboss.logging.Logger
+import org.keycloak.models.utils.KeycloakModelUtils.generateId
 import tech.ydb.jooq.YdbDSLContext
 
 
@@ -13,6 +16,8 @@ class RealmService(
 ) {
   private val realmRepository = RealmRepository(dsl)
   private val realmAttributeRepository = RealmAttributeRepository(dsl)
+
+  private val logger = Logger.getLogger(RealmService::class.java.name)
 
   fun getRealmById(id: String) = realmRepository.fetchOneById(id)?.toDomain()
 
@@ -31,4 +36,41 @@ class RealmService(
   }
 
   fun updateRealm(entity: Realm) = realmRepository.update(entity.toPojo())
+
+  fun updateRealmAttributes(realmId: String, name: String, values: List<String>) {
+    realmAttributeRepository.upsertRealmAttributes(realmId, name, values)
+  }
+
+  fun getAttributesByRealmId(realmId: String) =
+    realmAttributeRepository.fetchByRealmId(realmId).map { it.toDomain() }
+
+  fun getAttributeByRealmIdAndName(realmId: String, name: String): String? {
+    val attributes = realmAttributeRepository.fetchByRealmIdAndName(realmId, name).map { it.toDomain() }
+
+    // TODO: find out can here be several attributes or not
+    if (attributes.size > 1) {
+      logger.warn("Found more than one attribute found for realmId: $realmId, name: $name")
+    }
+
+    return attributes.firstOrNull()?.value
+  }
+
+  fun removeRealmAttributes(realmId: String, name: String) =
+    realmAttributeRepository.deleteByRealmIdAndName(realmId, name)
+
+
+  fun setAttribute(realmId: String, name: String, value: String): Unit = dsl.transactionResult { ctx ->
+    val attributes = realmAttributeRepository.fetchByRealmIdAndName(ctx.dsl(), realmId, name)
+
+    // TODO: find out can here be several attributes or not
+    if(attributes.size > 1) {
+      logger.warn("Found more than one attribute found for realmId: $realmId, name: $name")
+    }
+
+    if (attributes.isEmpty()) {
+      realmAttributeRepository.insert(RealmAttributes(generateId(), realmId, name, value))
+    } else {
+      realmAttributeRepository.update(attributes.map { it.copy(value = value) })
+    }
+  }
 }
