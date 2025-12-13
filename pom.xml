@@ -19,7 +19,6 @@
     <maven.compiler.release>21</maven.compiler.release>
     <keycloak.version>26.4.7</keycloak.version>
 
-    <ydb.version>2.3.21</ydb.version>
     <ydb-jdbc-driver.version>2.3.20</ydb-jdbc-driver.version>
 
     <hikaricp.version>7.0.2</hikaricp.version>
@@ -107,6 +106,85 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.liquibase</groupId>
+        <artifactId>liquibase-maven-plugin</artifactId>
+        <configuration>
+          <driver>tech.ydb.jdbc.YdbDriver</driver>
+          <url>jdbc:ydb:grpc://localhost:2136/local</url>
+          <changeLogFile>ydb/db.changelog-master.xml</changeLogFile>
+          <searchPath>${project.basedir}/src/main/resources</searchPath>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.jooq</groupId>
+        <artifactId>jooq-codegen-maven</artifactId>
+        <version>3.20.10</version>
+        <executions>
+          <execution>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+          </execution>
+        </executions>
+        <dependencies>
+          <dependency>
+            <groupId>tech.ydb.jdbc</groupId>
+            <artifactId>ydb-jdbc-driver</artifactId>
+            <version>${ydb-jdbc-driver.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>tech.ydb.dialects</groupId>
+            <artifactId>jooq-ydb-dialect</artifactId>
+            <version>${jooq-ydb-dialect.version}</version>
+          </dependency>
+        </dependencies>
+        <configuration>
+          <jdbc>
+            <driver>tech.ydb.jdbc.YdbDriver</driver>
+            <url>jdbc:ydb:grpc://localhost:2136/local</url>
+          </jdbc>
+          <generator>
+            <name>org.jooq.codegen.KotlinGenerator</name>
+            <strategy>
+              <name>tech.ydb.jooq.codegen.YdbGeneratorStrategy</name>
+            </strategy>
+            <database>
+              <name>tech.ydb.jooq.codegen.YdbDatabase</name>
+              <excludes>.sys.*</excludes>
+            </database>
+            <generate>
+              <kotlinNotNullPojoAttributes>true</kotlinNotNullPojoAttributes>
+              <kotlinNotNullRecordAttributes>true</kotlinNotNullRecordAttributes>
+              <kotlinNotNullInterfaceAttributes>true</kotlinNotNullInterfaceAttributes>
+            </generate>
+            <target>
+              <packageName>jooq.generated</packageName>
+              <directory>target/generated-sources</directory>
+            </target>
+          </generator>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>3.6.1</version>
+        <executions>
+          <execution>
+            <id>add-jooq-sources</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>add-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>target/generated-sources/jooq</source>
+              </sources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 
@@ -123,6 +201,13 @@
         <groupId>org.junit</groupId>
         <artifactId>junit-bom</artifactId>
         <version>6.0.1</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.jooq</groupId>
+        <artifactId>jooq-parent</artifactId>
+        <version>3.20.10</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -181,6 +266,19 @@
       <version>${hikaricp.version}</version>
     </dependency>
 
+    <!-- jooq -->
+    <dependency>
+      <groupId>org.jooq</groupId>
+      <artifactId>jooq</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jooq</groupId>
+      <artifactId>jooq-meta</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jooq</groupId>
+      <artifactId>jooq-codegen</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>tech.ydb.dialects</groupId>
@@ -192,6 +290,12 @@
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>tech.ydb.test</groupId>
+      <artifactId>ydb-junit5-support</artifactId>
+      <version>2.3.27</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

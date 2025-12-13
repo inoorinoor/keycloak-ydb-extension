@@ -2,7 +2,7 @@ package com.yandex.keycloak.ydb.connection
 
 import com.yandex.keycloak.ydb.YdbProfiles.IS_YDB_PROFILE_ENABLED
 import com.yandex.keycloak.ydb.migration.YdbMigrationManager.migrate
-import com.zaxxer.hikari.HikariConfig
+import com.yandex.keycloak.ydb.util.hikariDataSource
 import com.zaxxer.hikari.HikariDataSource
 import org.jboss.logging.Logger
 import org.keycloak.Config
@@ -10,6 +10,7 @@ import org.keycloak.models.KeycloakSession
 import org.keycloak.models.KeycloakSessionFactory
 import org.keycloak.provider.EnvironmentDependentProviderFactory
 import tech.ydb.jooq.YdbDSLContext
+import tech.ydb.jooq.impl.YdbDSLContextImpl
 import java.sql.Connection
 import java.sql.SQLException
 
@@ -38,21 +39,15 @@ class DefaultYdbConnectionProviderFactory() : YdbConnectionProviderFactory<YdbCo
     val poolSize = scope.getInt("poolSize", 10)
     val connectionTimeout = scope.getLong("connectionTimeout", 5000L)
 
-    val config = HikariConfig().apply {// todo revise
-      this.jdbcUrl = jdbcUrl
-      this.driverClassName = "tech.ydb.jdbc.YdbDriver"
-      this.maximumPoolSize = poolSize
-      this.connectionTimeout = connectionTimeout
-      this.poolName = "YDB-HikariPool"
-      this.isAutoCommit = false // todo revise
-    }
+    dataSource = hikariDataSource(jdbcUrl, poolSize, connectionTimeout)
 
-    dataSource = HikariDataSource(config)
+    dslContext = YdbDSLContextImpl(dataSource)
 
     logger.info("YDB HikariCP connection pool and JOOQ DSLContext configured successfully")
 
     migrate(dataSource)
   }
+
 
   override fun postInit(p0: KeycloakSessionFactory) {
     // no postInit operations

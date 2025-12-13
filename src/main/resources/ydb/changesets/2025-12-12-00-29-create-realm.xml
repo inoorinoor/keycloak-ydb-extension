@@ -10,7 +10,9 @@
       <column name="id" type="TEXT">
         <constraints primaryKey="true" nullable="false"/>
       </column>
-      <column name="name" type="TEXT"/>
+      <column name="name" type="TEXT">
+        <constraints nullable="false"/>
+      </column>
     </createTable>
   </changeSet>
 
