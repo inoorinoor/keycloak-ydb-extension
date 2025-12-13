@@ -1,37 +1,40 @@
 package com.yandex.keycloak.ydb.realm
 
+import com.yandex.keycloak.ydb.config.ProviderPriority.PROVIDER_PRIORITY
+import com.yandex.keycloak.ydb.config.YdbProfile.IS_YDB_PROFILE_ENABLED
 import com.yandex.keycloak.ydb.connection.YdbConnectionProvider
+import com.yandex.keycloak.ydb.realm.service.RealmService
 import org.keycloak.Config
 import org.keycloak.models.KeycloakSession
 import org.keycloak.models.KeycloakSessionFactory
 import org.keycloak.models.RealmProviderFactory
 import org.keycloak.provider.EnvironmentDependentProviderFactory
 
-class YdbRealmProviderFactory(): RealmProviderFactory<YdbRealmProvider>, EnvironmentDependentProviderFactory {
-  override fun create(session: KeycloakSession): YdbRealmProvider {
+class YdbRealmProviderFactory() : RealmProviderFactory<YdbRealmProvider>, EnvironmentDependentProviderFactory {
+  override fun create(session: KeycloakSession): YdbRealmProvider =
+    session.getProvider(YdbConnectionProvider::class.java)?.let {
+      YdbRealmProvider(session, RealmService(it.ydbDSLContext))
+    } ?: error("YdbConnectionProvider is not configured")
 
-    val ydbConnectionProvider = session.getProvider(YdbConnectionProvider::class.java) ?: error("YdbConnectionProvider is not configured")
-
-    return YdbRealmProvider()
-  }
-
-  override fun init(p0: Config.Scope?) {
-    TODO("Not yet implemented")
+  override fun init(scope: Config.Scope) {
+    // no operations
   }
 
   override fun postInit(p0: KeycloakSessionFactory?) {
-    TODO("Not yet implemented")
+    // no operations
   }
 
   override fun close() {
-    TODO("Not yet implemented")
+    // no operations
   }
 
-  override fun getId(): String? {
-    TODO("Not yet implemented")
-  }
+  override fun getId(): String = ID
 
-  override fun isSupported(p0: Config.Scope?): Boolean {
-    TODO("Not yet implemented")
+  override fun isSupported(scope: Config.Scope): Boolean = IS_YDB_PROFILE_ENABLED
+
+  override fun order(): Int = PROVIDER_PRIORITY + 1
+
+  private companion object {
+    private const val ID = "ydb-realm-provider-factory"
   }
 }

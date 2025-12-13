@@ -11,8 +11,6 @@ import org.keycloak.models.KeycloakSessionFactory
 import org.keycloak.provider.EnvironmentDependentProviderFactory
 import tech.ydb.jooq.YdbDSLContext
 import tech.ydb.jooq.impl.YdbDSLContextImpl
-import java.sql.Connection
-import java.sql.SQLException
 
 class DefaultYdbConnectionProviderFactory() : YdbConnectionProviderFactory<YdbConnectionProvider>,
   EnvironmentDependentProviderFactory {
@@ -21,18 +19,7 @@ class DefaultYdbConnectionProviderFactory() : YdbConnectionProviderFactory<YdbCo
   private lateinit var dataSource: HikariDataSource
   private lateinit var dslContext: YdbDSLContext
 
-  override fun create(session: KeycloakSession): YdbConnectionProvider = object : YdbConnectionProvider {
-    override val connection: Connection = try {
-      dataSource.connection
-    } catch (e: SQLException) {
-      logger.error("Failed to get YDB connection from pool", e)
-      throw e
-    }
-
-    override val ydbDSLContext: YdbDSLContext = dslContext
-
-    override fun close() = connection.close()
-  }
+  override fun create(session: KeycloakSession): YdbConnectionProvider = createYdbConnectionProvider()
 
   override fun init(scope: Config.Scope) {
     val jdbcUrl = scope["jdbcUrl"]
@@ -57,8 +44,14 @@ class DefaultYdbConnectionProviderFactory() : YdbConnectionProviderFactory<YdbCo
 
   override fun getId(): String = PROVIDER_ID
 
-  override fun isSupported(scope: Config.Scope): Boolean = IS_YDB_PROFILE_ENABLED.also {
-    logger.info("was in isSupported")
+  override fun isSupported(scope: Config.Scope): Boolean = IS_YDB_PROFILE_ENABLED
+
+  private fun createYdbConnectionProvider(): YdbConnectionProvider = object : YdbConnectionProvider {
+    override val ydbDSLContext: YdbDSLContext = dslContext
+
+    override fun close() {
+      // no operations
+    }
   }
 
   private companion object {

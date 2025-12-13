@@ -1,66 +1,45 @@
 package com.yandex.keycloak.ydb.realm
 
+import com.yandex.keycloak.ydb.realm.YdbRealmAttributeConstants.DISPLAY_NAME
+import com.yandex.keycloak.ydb.realm.YdbRealmAttributeConstants.DISPLAY_NAME_HTML
+import com.yandex.keycloak.ydb.realm.YdbRealmAttributeConstants.IS_ENABLED
+import com.yandex.keycloak.ydb.realm.domain.Realm
+import com.yandex.keycloak.ydb.realm.service.RealmService
 import org.keycloak.common.enums.SslRequired
 import org.keycloak.component.ComponentModel
-import org.keycloak.models.AuthenticationExecutionModel
-import org.keycloak.models.AuthenticationFlowModel
-import org.keycloak.models.AuthenticatorConfigModel
-import org.keycloak.models.CibaConfig
-import org.keycloak.models.ClientInitialAccessModel
-import org.keycloak.models.ClientModel
-import org.keycloak.models.ClientScopeModel
-import org.keycloak.models.GroupModel
-import org.keycloak.models.IdentityProviderMapperModel
-import org.keycloak.models.IdentityProviderModel
-import org.keycloak.models.OAuth2DeviceConfig
-import org.keycloak.models.OTPPolicy
-import org.keycloak.models.ParConfig
-import org.keycloak.models.PasswordPolicy
-import org.keycloak.models.RealmModel
-import org.keycloak.models.RequiredActionConfigModel
-import org.keycloak.models.RequiredActionProviderModel
-import org.keycloak.models.RequiredCredentialModel
-import org.keycloak.models.RoleModel
-import org.keycloak.models.WebAuthnPolicy
+import org.keycloak.models.*
 import org.keycloak.representations.idm.RealmRepresentation
 import java.util.stream.Stream
 
-class YdbRealmAdapter(): RealmModel {
-  override fun getId(): String? {
-    TODO("Not yet implemented")
+class YdbRealmAdapter(
+  private var realm: Realm,
+  private val session: KeycloakSession,
+  private val realmService: RealmService,
+) : RealmModel {
+  override fun getId() = realm.id
+
+  override fun getName(): String = realm.id
+
+  override fun setName(name: String?) {
+    if(name != null && name != realm.name) {
+      realm = realm.copy(name = name)
+
+      realmService.updateRealm(realm)
+    }
   }
 
-  override fun getName(): String? {
-    TODO("Not yet implemented")
-  }
+  override fun getDisplayName(): String? = getAttribute(DISPLAY_NAME)
 
-  override fun setName(p0: String?) {
-    TODO("Not yet implemented")
-  }
 
-  override fun getDisplayName(): String? {
-    TODO("Not yet implemented")
-  }
+  override fun setDisplayName(displayName: String?) = setAttribute(DISPLAY_NAME, displayName)
 
-  override fun setDisplayName(p0: String?) {
-    TODO("Not yet implemented")
-  }
+  override fun getDisplayNameHtml(): String? = getAttribute(DISPLAY_NAME_HTML);
 
-  override fun getDisplayNameHtml(): String? {
-    TODO("Not yet implemented")
-  }
+  override fun setDisplayNameHtml(displayNameHtml: String?) = setAttribute(DISPLAY_NAME_HTML, displayNameHtml)
 
-  override fun setDisplayNameHtml(p0: String?) {
-    TODO("Not yet implemented")
-  }
+  override fun isEnabled(): Boolean = getAttribute(IS_ENABLED, false)
 
-  override fun isEnabled(): Boolean {
-    TODO("Not yet implemented")
-  }
-
-  override fun setEnabled(p0: Boolean) {
-    TODO("Not yet implemented")
-  }
+  override fun setEnabled(enabled: Boolean) = setAttribute(IS_ENABLED, enabled)
 
   override fun getSslRequired(): SslRequired? {
     TODO("Not yet implemented")

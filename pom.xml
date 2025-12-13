@@ -155,6 +155,7 @@
               <excludes>.sys.*</excludes>
             </database>
             <generate>
+              <daos>true</daos>
               <kotlinNotNullPojoAttributes>true</kotlinNotNullPojoAttributes>
               <kotlinNotNullRecordAttributes>true</kotlinNotNullRecordAttributes>
               <kotlinNotNullInterfaceAttributes>true</kotlinNotNullInterfaceAttributes>
