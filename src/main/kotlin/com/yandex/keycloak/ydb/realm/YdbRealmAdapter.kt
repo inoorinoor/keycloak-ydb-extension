@@ -342,12 +342,32 @@ class YdbRealmAdapter(
   override fun setPasswordPolicy(passwordPolicy: PasswordPolicy?) =
     setAttribute(PASSWORD_POLICY, passwordPolicy?.toString())
 
-  override fun getOTPPolicy(): OTPPolicy? {
-    TODO("Not yet implemented")
+  override fun getOTPPolicy(): OTPPolicy = with(realm) {
+    OTPPolicy(
+      /* type = */ otpPolicyType,
+      /* algorithm = */ otpPolicyAlgorithm,
+      /* initialCounter = */ otpPolicyInitialCounter,
+      /* digits = */ otpPolicyDigits,
+      /* lookAheadWindow = */ otpPolicyLookAheadWindow,
+      /* period = */ otpPolicyPeriod,
+      /* isCodeReusable = */ otpPolicyIsCodeReusable,
+    )
   }
 
-  override fun setOTPPolicy(otpPolicy: OTPPolicy?) {
-    TODO("Not yet implemented")
+  override fun setOTPPolicy(otpPolicy: OTPPolicy?) = with(otpPolicy) {
+    requireNotNull(this) { "otpPolicy cannot be null" }
+
+    val newRealm = realm.copy(
+      otpPolicyType = type,
+      otpPolicyAlgorithm = algorithm,
+      otpPolicyInitialCounter = initialCounter,
+      otpPolicyDigits = digits,
+      otpPolicyLookAheadWindow = lookAheadWindow,
+      otpPolicyPeriod = period,
+      otpPolicyIsCodeReusable = isCodeReusable
+    )
+
+    realmService.updateRealm(newRealm)
   }
 
   override fun getWebAuthnPolicy(): WebAuthnPolicy? {

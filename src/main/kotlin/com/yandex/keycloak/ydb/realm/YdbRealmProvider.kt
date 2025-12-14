@@ -29,7 +29,7 @@ class YdbRealmProvider(
       throw ModelDuplicateException("Realm with id='$id' exists")
     }
 
-    val entity = Realm(id, name)
+    val entity = Realm(id = id, name = name)
     realmService.createRealm(entity)
 
     val adapter = YdbRealmAdapter(entity, session, realmService)

@@ -9,9 +9,29 @@ import jooq.generated.default_schema.tables.pojos.Realms
 import org.keycloak.models.RequiredCredentialModel
 
 object RealmMapper {
-  fun Realms.toDomain(): Realm = Realm(id, name)
+  fun Realms.toDomain(): Realm = Realm(
+    id = id,
+    name = name,
+    otpPolicyType = otpPolicyType,
+    otpPolicyAlgorithm = otpPolicyAlgorithm,
+    otpPolicyInitialCounter = otpPolicyInitialCounter,
+    otpPolicyDigits = otpPolicyDigits,
+    otpPolicyLookAheadWindow = otpPolicyLookAheadWindow,
+    otpPolicyPeriod = otpPolicyPeriod,
+    otpPolicyIsCodeReusable = otpPolicyIsCodeReusable,
+  )
 
-  fun Realm.toPojo(): Realms = Realms(id, name)
+  fun Realm.toPojo(): Realms = Realms(
+    id = id,
+    name = name,
+    otpPolicyType = otpPolicyType,
+    otpPolicyAlgorithm = otpPolicyAlgorithm,
+    otpPolicyInitialCounter = otpPolicyInitialCounter,
+    otpPolicyDigits = otpPolicyDigits,
+    otpPolicyLookAheadWindow = otpPolicyLookAheadWindow,
+    otpPolicyPeriod = otpPolicyPeriod,
+    otpPolicyIsCodeReusable = otpPolicyIsCodeReusable,
+  )
 
   fun RealmAttributes.toDomain(): RealmAttribute = RealmAttribute(
     id = id,
