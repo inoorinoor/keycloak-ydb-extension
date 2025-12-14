@@ -370,21 +370,15 @@ class YdbRealmAdapter(
     realmService.updateRealm(newRealm)
   }
 
-  override fun getWebAuthnPolicy(): WebAuthnPolicy? {
-    TODO("Not yet implemented")
-  }
+  override fun getWebAuthnPolicy(): WebAuthnPolicy = getWebAuthnPolicy("")
 
-  override fun setWebAuthnPolicy(webAuthnPolicy: WebAuthnPolicy?) {
-    TODO("Not yet implemented")
-  }
+  override fun setWebAuthnPolicy(policy: WebAuthnPolicy) = setWebAuthnPolicy(policy, "")
 
-  override fun getWebAuthnPolicyPasswordless(): WebAuthnPolicy? {
-    TODO("Not yet implemented")
-  }
+  override fun getWebAuthnPolicyPasswordless(): WebAuthnPolicy =
+    getWebAuthnPolicy(WEB_AUTHN_POLICY_PASSWORDLESS)
 
-  override fun setWebAuthnPolicyPasswordless(webAuthnPolicy: WebAuthnPolicy?) {
-    TODO("Not yet implemented")
-  }
+  override fun setWebAuthnPolicyPasswordless(policy: WebAuthnPolicy) =
+    setWebAuthnPolicy(policy, WEB_AUTHN_POLICY_PASSWORDLESS)
 
   override fun getRoleById(roleId: String?): RoleModel? {
     TODO("Not yet implemented")
@@ -975,7 +969,15 @@ class YdbRealmAdapter(
   private fun addRequiredCredential(model: RequiredCredentialModel) =
     realmService.addRequiredCredential(model.toDomain(generateId(), realm.id))
 
+  private fun getWebAuthnPolicy(prefix: String): WebAuthnPolicy =
+    realmService.getWebAuthnPolicy(realm.id, WebAuthnPolicyTwoFactorDefaults.get(), prefix)
+
+  private fun setWebAuthnPolicy(policy: WebAuthnPolicy, prefix: String) =
+    realmService.setWebAuthnPolicy(realm.id, policy, prefix)
+
   private companion object {
+    // TODO: maybe just take this constants from postgres db and not invent new ones here
+
     const val DISPLAY_NAME: String = INTERNAL_ATTRIBUTE_PREFIX + "displayName"
     const val DISPLAY_NAME_HTML: String = INTERNAL_ATTRIBUTE_PREFIX + "displayNameHtml"
     const val IS_ENABLED: String = INTERNAL_ATTRIBUTE_PREFIX + "enabled"

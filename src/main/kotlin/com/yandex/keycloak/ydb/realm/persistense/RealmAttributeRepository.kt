@@ -29,15 +29,19 @@ class RealmAttributeRepository(
       .execute()
   }
 
-  fun fetchByRealmIdAndName(realmId: String, name: String): List<RealmAttributes> =
-    fetchByRealmIdAndName(dsl, realmId, name)
-
-  fun deleteByRealmIdAndName(realmId: String, name: String) = with(REALM_ATTRIBUTES) {
-    dsl.deleteFrom(this)
+  // TODO: ask is it good to pass context like this
+  fun deleteByRealmIdAndName(realmId: String, name: String) = deleteByRealmIdAndName(dsl, realmId, name)
+  fun deleteByRealmIdAndName(txDsl: DSLContext, realmId: String, name: String) = with(REALM_ATTRIBUTES) {
+    txDsl.deleteFrom(this)
       .where(REALM_ID.eq(realmId).and(NAME.eq(name)))
       .execute()
   }
 
+  // TODO: ask is it good to pass context like this
+  fun fetchByRealmIdAndName(realmId: String, name: String): List<RealmAttributes> =
+    fetchByRealmIdAndName(dsl, realmId, name)
+
+  // TODO: ask is it good to pass context like this
   fun fetchByRealmIdAndName(txDsl: DSLContext, realmId: String, name: String) = with(REALM_ATTRIBUTES) {
     txDsl.selectFrom(this)
       .where(REALM_ID.eq(realmId).and(NAME.eq(name)))
