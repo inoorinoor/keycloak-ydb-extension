@@ -3,12 +3,16 @@ package com.yandex.keycloak.ydb.realm.service
 import com.yandex.keycloak.ydb.realm.RealmMapper.toDomain
 import com.yandex.keycloak.ydb.realm.RealmMapper.toPojo
 import com.yandex.keycloak.ydb.realm.domain.Realm
+import com.yandex.keycloak.ydb.realm.domain.RealmRequiredCredential
 import com.yandex.keycloak.ydb.realm.persistense.RealmAttributeRepository
 import com.yandex.keycloak.ydb.realm.persistense.RealmRepository
+import com.yandex.keycloak.ydb.realm.persistense.RealmRequiredCredentialRepository
 import jooq.generated.default_schema.tables.pojos.RealmAttributes
 import org.jboss.logging.Logger
+import org.keycloak.models.RequiredCredentialModel
 import org.keycloak.models.utils.KeycloakModelUtils.generateId
 import tech.ydb.jooq.YdbDSLContext
+import java.util.stream.Stream
 
 
 class RealmService(
@@ -16,6 +20,7 @@ class RealmService(
 ) {
   private val realmRepository = RealmRepository(dsl)
   private val realmAttributeRepository = RealmAttributeRepository(dsl)
+  private val realmRequiredCredentialRepository = RealmRequiredCredentialRepository(dsl)
 
   private val logger = Logger.getLogger(RealmService::class.java.name)
 
@@ -73,4 +78,11 @@ class RealmService(
       realmAttributeRepository.update(attributes.map { it.copy(value = value) })
     }
   }
+
+  fun getRequiredCredentialsByRealmId(realmId: String): Stream<RequiredCredentialModel> =
+    realmRequiredCredentialRepository.fetchByRealmId(realmId).map { it.toDomain() }.stream()
+
+  fun addRequiredCredential(model: RealmRequiredCredential) =
+    realmRequiredCredentialRepository.insert(model.toPojo())
+
 }

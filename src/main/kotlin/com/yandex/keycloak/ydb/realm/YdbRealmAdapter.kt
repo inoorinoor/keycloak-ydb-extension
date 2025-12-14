@@ -1,12 +1,14 @@
 package com.yandex.keycloak.ydb.realm
 
 import com.yandex.keycloak.ydb.common.AttributePrefixes.INTERNAL_ATTRIBUTE_PREFIX
-import com.yandex.keycloak.ydb.common.AttributePrefixes.READONLY_ATTRIBUTE_PREFIX
+import com.yandex.keycloak.ydb.realm.RealmMapper.toDomain
 import com.yandex.keycloak.ydb.realm.domain.Realm
 import com.yandex.keycloak.ydb.realm.service.RealmService
+import org.jboss.logging.Logger
 import org.keycloak.common.enums.SslRequired
 import org.keycloak.component.ComponentModel
 import org.keycloak.models.*
+import org.keycloak.models.utils.KeycloakModelUtils.generateId
 import org.keycloak.representations.idm.RealmRepresentation
 import java.util.stream.Stream
 
@@ -15,6 +17,8 @@ class YdbRealmAdapter(
   private val session: KeycloakSession,
   private val realmService: RealmService,
 ) : RealmModel {
+  private val logger = Logger.getLogger(YdbRealmAdapter::class.java)
+
   override fun getId() = realm.id
 
   override fun getName(): String = realm.id
@@ -95,7 +99,7 @@ class YdbRealmAdapter(
   }
 
   override fun getAttribute(name: String?): String? {
-    if(name == null) return null
+    if (name == null) return null
 
     return realmService.getAttributeByRealmIdAndName(realm.id, name)
   }
@@ -322,12 +326,15 @@ class YdbRealmAdapter(
     }
   }
 
-  override fun getRequiredCredentialsStream(): Stream<RequiredCredentialModel> {
-    TODO()
-  }
+  override fun getRequiredCredentialsStream(): Stream<RequiredCredentialModel> =
+    realmService.getRequiredCredentialsByRealmId(realm.id)
 
   override fun addRequiredCredential(credentialType: String?) {
-    TODO("Not yet implemented")
+    if (credentialType == null) {
+      logger.warn("Credential with name $credentialType is null")
+    }
+
+    addRequiredCredential(initRequiredCredentialModel(credentialType))
   }
 
   override fun getPasswordPolicy(): PasswordPolicy? = PasswordPolicy.parse(session, getAttribute(PASSWORD_POLICY))
@@ -942,13 +949,11 @@ class YdbRealmAdapter(
     TODO("Not yet implemented")
   }
 
-  private fun setAttribute(name: String?, values: List<String>?) {
-    if (name == null || values == null || name.startsWith(READONLY_ATTRIBUTE_PREFIX)) {
-      return
-    }
+  private fun initRequiredCredentialModel(type: String?): RequiredCredentialModel =
+    RequiredCredentialModel.BUILT_IN[type] ?: error("Unknown credential type $type")
 
-    realmService.updateRealmAttributes(realm.id, name, values)
-  }
+  private fun addRequiredCredential(model: RequiredCredentialModel) =
+    realmService.addRequiredCredential(model.toDomain(generateId(), realm.id))
 
   private companion object {
     const val DISPLAY_NAME: String = INTERNAL_ATTRIBUTE_PREFIX + "displayName"
