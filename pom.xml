@@ -152,7 +152,7 @@
             </strategy>
             <database>
               <name>tech.ydb.jooq.codegen.YdbDatabase</name>
-              <excludes>.sys.*</excludes>
+              <excludes>.sys.*|DATABASECHANGELOG.*</excludes>
             </database>
             <generate>
               <daos>true</daos>
