@@ -32,7 +32,7 @@
   </changeSet>
 
   <changeSet id="2025-12-14-02-18-create-realm-required-credential-table" author="keycloak-ydb-extension">
-    <createTable tableName="realm_required_credential">
+    <createTable tableName="realm_required_credentials">
       <column name="id" type="TEXT">
         <constraints primaryKey="true" nullable="false"/>
       </column>
