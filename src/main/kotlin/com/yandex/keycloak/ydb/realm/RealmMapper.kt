@@ -21,17 +21,19 @@ object RealmMapper {
     otpPolicyIsCodeReusable = otpPolicyIsCodeReusable,
   )
 
-  fun Realm.toPojo(): Realms = Realms(
-    id = id,
-    name = name,
-    otpPolicyType = otpPolicyType,
-    otpPolicyAlgorithm = otpPolicyAlgorithm,
-    otpPolicyInitialCounter = otpPolicyInitialCounter,
-    otpPolicyDigits = otpPolicyDigits,
-    otpPolicyLookAheadWindow = otpPolicyLookAheadWindow,
-    otpPolicyPeriod = otpPolicyPeriod,
-    otpPolicyIsCodeReusable = otpPolicyIsCodeReusable,
-  )
+  fun Realm.toPojo(): Realms = let {
+    Realms().apply {
+      id = it.id
+      name = it.name
+      otpPolicyType = it.otpPolicyType
+      otpPolicyAlgorithm = it.otpPolicyAlgorithm
+      otpPolicyInitialCounter = it.otpPolicyInitialCounter
+      otpPolicyDigits = it.otpPolicyDigits
+      otpPolicyLookAheadWindow = it.otpPolicyLookAheadWindow
+      otpPolicyPeriod = it.otpPolicyPeriod
+      otpPolicyIsCodeReusable = it.otpPolicyIsCodeReusable
+    }
+  }
 
   fun RealmAttributes.toDomain(): RealmAttribute = RealmAttribute(
     id = id,
@@ -58,12 +60,14 @@ object RealmMapper {
     realmId = realmId,
   )
 
-  fun RealmRequiredCredential.toPojo(): RealmRequiredCredentials = RealmRequiredCredentials(
-    id = id,
-    type = type,
-    formLabel = formLabel,
-    input = input,
-    secret = secret,
-    realmId = realmId,
-  )
+  fun RealmRequiredCredential.toPojo(): RealmRequiredCredentials = let {
+    RealmRequiredCredentials().apply {
+      id = it.id
+      type = it.type
+      formLabel = it.formLabel
+      input = it.input
+      secret = it.secret
+      realmId = it.realmId
+    }
+  }
 }

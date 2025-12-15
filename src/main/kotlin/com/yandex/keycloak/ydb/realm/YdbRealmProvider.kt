@@ -2,6 +2,7 @@ package com.yandex.keycloak.ydb.realm
 
 import com.yandex.keycloak.ydb.realm.domain.Realm
 import com.yandex.keycloak.ydb.realm.service.RealmService
+import org.jboss.logging.Logger
 import org.keycloak.models.KeycloakSession
 import org.keycloak.models.ModelDuplicateException
 import org.keycloak.models.RealmModel
@@ -14,9 +15,13 @@ class YdbRealmProvider(
   private val realmService: RealmService,
 ) : RealmProvider {
 
+  private val logger = Logger.getLogger(YdbRealmProvider::class.java)
+
   override fun createRealm(name: String?): RealmModel = createRealm(generateId(), name)
 
   override fun createRealm(id: String?, name: String?): RealmModel {
+    logger.info("Creating Realm id: $id, name: $name")
+
     requireNotNull(id) { "Realm id cannot be null" }
     requireNotNull(name) { "Realm name cannot be null" }
 

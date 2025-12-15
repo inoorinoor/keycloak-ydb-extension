@@ -302,6 +302,8 @@ class YdbRealmAdapter(
   override fun setActionTokenGeneratedByAdminLifespan(actionTokenGeneratedByAdminLifespan: Int) =
     setAttribute(ACTION_TOKEN_GENERATED_BY_ADMIN_LIFESPAN, actionTokenGeneratedByAdminLifespan)
 
+
+  // TODO: it is not correct
   override fun getActionTokenGeneratedByUserLifespan(): Int =
     getAttribute(ACTION_TOKEN_GENERATED_BY_USER_LIFESPAN, getAccessCodeLifespanUserAction())
 

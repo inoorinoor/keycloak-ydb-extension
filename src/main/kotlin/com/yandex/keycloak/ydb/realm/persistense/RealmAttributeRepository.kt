@@ -1,8 +1,7 @@
 package com.yandex.keycloak.ydb.realm.persistense
 
-import jooq.generated.default_schema.tables.daos.RealmAttributesDao
+import jooq.generated.default_schema.Tables.REALM_ATTRIBUTES
 import jooq.generated.default_schema.tables.pojos.RealmAttributes
-import jooq.generated.default_schema.tables.references.REALM_ATTRIBUTES
 import org.jooq.DSLContext
 import org.keycloak.models.utils.KeycloakModelUtils.generateId
 import tech.ydb.jooq.YdbDSLContext
@@ -10,7 +9,7 @@ import tech.ydb.jooq.YdbDSLContext
 @Suppress("kotlin:S6518")
 class RealmAttributeRepository(
   private val dsl: YdbDSLContext
-) : RealmAttributesDao(dsl.configuration()) {
+) {
 
   fun deleteByRealmId(txDsl: DSLContext, realmId: String) =
     txDsl.deleteFrom(REALM_ATTRIBUTES)
@@ -42,9 +41,23 @@ class RealmAttributeRepository(
     fetchByRealmIdAndName(dsl, realmId, name)
 
   // TODO: ask is it good to pass context like this
-  fun fetchByRealmIdAndName(txDsl: DSLContext, realmId: String, name: String) = with(REALM_ATTRIBUTES) {
-    txDsl.selectFrom(this)
-      .where(REALM_ID.eq(realmId).and(NAME.eq(name)))
-      .fetch(mapper())
+  fun fetchByRealmIdAndName(txDsl: DSLContext, realmId: String, name: String): List<RealmAttributes> =
+    with(REALM_ATTRIBUTES) {
+      TODO()
+//    txDsl.selectFrom(this)
+//      .where(REALM_ID.eq(realmId).and(NAME.eq(name)))
+//      .fetch(mapping(RealmAttributes::class.java))
+    }
+
+  fun fetchByRealmId(realmId: String): List<RealmAttributes> {
+    TODO()
+  }
+
+  fun insert(realmAttributes: RealmAttributes) {
+    TODO()
+  }
+
+  fun update(map: List<RealmAttributes>) {
+    TODO()
   }
 }
