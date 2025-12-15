@@ -17,7 +17,8 @@ fun hikariConfig(
   this.jdbcUrl = jdbcUrl
   this.driverClassName = "tech.ydb.jdbc.YdbDriver"
   this.maximumPoolSize = poolSize
-  this.connectionTimeout = connectionTimeout
+  // Driver does not support get/set network timeout for connections. (Set network timeout is not supported yet)
+  //  this.connectionTimeout = connectionTimeout
   this.poolName = "YDB-HikariPool"
   this.isAutoCommit = false // todo revise
 }

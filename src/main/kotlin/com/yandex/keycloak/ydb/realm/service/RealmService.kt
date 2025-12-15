@@ -84,7 +84,11 @@ class RealmService(
     if (attributes.isEmpty()) {
       realmAttributeRepository.insert(RealmAttributes(generateId(), realmId, name, value))
     } else {
-      realmAttributeRepository.update(attributes.map { it.copy(value = value) })
+      realmAttributeRepository.update(
+        attributes.map {
+          RealmAttributes(it).apply { this.value = value }
+        }
+      )
     }
   }
 
