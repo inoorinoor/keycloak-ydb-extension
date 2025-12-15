@@ -4,9 +4,9 @@
 package jooq.generated.default_schema;
 
 
-import jooq.generated.default_schema.tables.RealmAttributes;
-import jooq.generated.default_schema.tables.RealmRequiredCredentials;
-import jooq.generated.default_schema.tables.Realms;
+import jooq.generated.default_schema.tables.Realm;
+import jooq.generated.default_schema.tables.RealmAttribute;
+import jooq.generated.default_schema.tables.RealmRequiredCredential;
 
 
 /**
@@ -16,17 +16,17 @@ import jooq.generated.default_schema.tables.Realms;
 public class Tables {
 
     /**
-     * The table <code>DEFAULT_SCHEMA.realm_attributes</code>.
+     * The table <code>DEFAULT_SCHEMA.REALM</code>.
      */
-    public static final RealmAttributes REALM_ATTRIBUTES = RealmAttributes.REALM_ATTRIBUTES;
+    public static final Realm REALM = Realm.REALM;
 
     /**
-     * The table <code>DEFAULT_SCHEMA.realm_required_credentials</code>.
+     * The table <code>DEFAULT_SCHEMA.REALM_ATTRIBUTE</code>.
      */
-    public static final RealmRequiredCredentials REALM_REQUIRED_CREDENTIALS = RealmRequiredCredentials.REALM_REQUIRED_CREDENTIALS;
+    public static final RealmAttribute REALM_ATTRIBUTE = RealmAttribute.REALM_ATTRIBUTE;
 
     /**
-     * The table <code>DEFAULT_SCHEMA.realms</code>.
+     * The table <code>DEFAULT_SCHEMA.REALM_REQUIRED_CREDENTIAL</code>.
      */
-    public static final Realms REALMS = Realms.REALMS;
+    public static final RealmRequiredCredential REALM_REQUIRED_CREDENTIAL = RealmRequiredCredential.REALM_REQUIRED_CREDENTIAL;
 }

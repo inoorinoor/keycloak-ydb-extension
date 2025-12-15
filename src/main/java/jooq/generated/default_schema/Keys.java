@@ -4,12 +4,12 @@
 package jooq.generated.default_schema;
 
 
-import jooq.generated.default_schema.tables.RealmAttributes;
-import jooq.generated.default_schema.tables.RealmRequiredCredentials;
-import jooq.generated.default_schema.tables.Realms;
-import jooq.generated.default_schema.tables.records.RealmAttributesRecord;
-import jooq.generated.default_schema.tables.records.RealmRequiredCredentialsRecord;
-import jooq.generated.default_schema.tables.records.RealmsRecord;
+import jooq.generated.default_schema.tables.Realm;
+import jooq.generated.default_schema.tables.RealmAttribute;
+import jooq.generated.default_schema.tables.RealmRequiredCredential;
+import jooq.generated.default_schema.tables.records.RealmAttributeRecord;
+import jooq.generated.default_schema.tables.records.RealmRecord;
+import jooq.generated.default_schema.tables.records.RealmRequiredCredentialRecord;
 
 import org.jooq.TableField;
 import org.jooq.UniqueKey;
@@ -28,7 +28,7 @@ public class Keys {
     // UNIQUE and PRIMARY KEY definitions
     // -------------------------------------------------------------------------
 
-    public static final UniqueKey<RealmAttributesRecord> PK_REALM_ATTRIBUTES = Internal.createUniqueKey(RealmAttributes.REALM_ATTRIBUTES, DSL.name("pk_realm_attributes"), new TableField[] { RealmAttributes.REALM_ATTRIBUTES.ID }, true);
-    public static final UniqueKey<RealmRequiredCredentialsRecord> PK_REALM_REQUIRED_CREDENTIALS = Internal.createUniqueKey(RealmRequiredCredentials.REALM_REQUIRED_CREDENTIALS, DSL.name("pk_realm_required_credentials"), new TableField[] { RealmRequiredCredentials.REALM_REQUIRED_CREDENTIALS.ID }, true);
-    public static final UniqueKey<RealmsRecord> PK_REALMS = Internal.createUniqueKey(Realms.REALMS, DSL.name("pk_realms"), new TableField[] { Realms.REALMS.ID }, true);
+    public static final UniqueKey<RealmRecord> PK_REALM = Internal.createUniqueKey(Realm.REALM, DSL.name("pk_REALM"), new TableField[] { Realm.REALM.ID }, true);
+    public static final UniqueKey<RealmAttributeRecord> PK_REALM_ATTRIBUTE = Internal.createUniqueKey(RealmAttribute.REALM_ATTRIBUTE, DSL.name("pk_REALM_ATTRIBUTE"), new TableField[] { RealmAttribute.REALM_ATTRIBUTE.NAME, RealmAttribute.REALM_ATTRIBUTE.REALM_ID }, true);
+    public static final UniqueKey<RealmRequiredCredentialRecord> PK_REALM_REQUIRED_CREDENTIAL = Internal.createUniqueKey(RealmRequiredCredential.REALM_REQUIRED_CREDENTIAL, DSL.name("pk_REALM_REQUIRED_CREDENTIAL"), new TableField[] { RealmRequiredCredential.REALM_REQUIRED_CREDENTIAL.REALM_ID, RealmRequiredCredential.REALM_REQUIRED_CREDENTIAL.TYPE }, true);
 }

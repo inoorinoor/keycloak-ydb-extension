@@ -1,0 +1,9 @@
+CREATE TABLE IF NOT EXISTS `AUTHENTICATOR_CONFIG`
+(
+    `ID`       Utf8 NOT NULL,
+    `ALIAS`    Utf8,
+    `REALM_ID` Utf8,
+
+    PRIMARY KEY (`ID`)
+);
+

@@ -1,0 +1,77 @@
+version: '3.4'
+
+volumes:
+  cassandra_data:
+    driver: local
+  ydb_data:
+    driver: local
+  ydb_certs:
+    driver: local
+
+networks:
+  keycloak:
+    driver: bridge
+
+services:
+  ydb:
+    image: ydbplatform/local-ydb:latest
+    platform: linux/amd64
+    ports:
+      - '2135:2135'  # GRPC TLS
+      - '2136:2136'  # GRPC
+      - '8765:8765'  # Monitoring UI
+      - '9092:9092'  # Kafka Proxy
+    volumes:
+      - 'ydb_certs:/ydb_certs'
+      - 'ydb_data:/ydb_data'
+    networks:
+      - keycloak
+    environment:
+      - GRPC_TLS_PORT=2135
+      - GRPC_PORT=2136
+      - MON_PORT=8765
+      - YDB_KAFKA_PROXY_PORT=9092
+    healthcheck:
+      test: ["CMD", "ydb", "--endpoint", "grpc://localhost:2136", "--database", "/local", "scheme", "ls"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.4.7
+    volumes:
+      # YDB extension
+#      - /Users/ainurmukhtarov/IdeaProjects/ktor-keycloak/docker/opt/keycloak/providers/keycloak-ydb-extension-5.4.6-26.4-SNAPSHOT.jar:/opt/keycloak/providers/keycloak-ydb-extension-5.4.6-26.4-SNAPSHOT.jar
+      - ./providers/keycloak-ydb-extension-1.0-SNAPSHOT.jar:/opt/keycloak/providers/keycloak-ydb-extension-1.0-SNAPSHOT.jar
+    environment:
+      # YDB Configuration
+      - KC_COMMUNITY_DATASTORE_YDB_ENABLED=true
+      - KC_SPI_YDB_CONNECTION_DEFAULT_JDBC_URL=jdbc:ydb:grpc://ydb:2136/local
+      - KC_SPI_YDB_CONNECTION_DEFAULT_CONNECTION_TIMEOUT=5000
+      - KC_SPI_YDB_CONNECTION_DEFAULT_CREATE_SCHEMA=true
+
+      - KC_COMMUNITY_DATASTORE_YDB_ENABLED=true
+      - KC_SPI_YDB_CONNECTION_DEFAULT_DATABASE=/local
+      - KC_SPI_YDB_CONNECTION_DEFAULT_AUTH_METHOD=anonymous
+      - KC_SPI_YDB_CONNECTION_DEFAULT_CREATE_SCHEMA=true
+
+      # Keycloak Admin
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+    entrypoint: /opt/keycloak/bin/kc.sh
+    command: >
+      -v start-dev 
+      --cache=local 
+      --features-disabled=authorization,admin-fine-grained-authz,organization
+      --spi-connections-jpa-legacy-enabled=false
+      --spi-ydb-connection-default-endpoint=grpc://ydb:2136
+      --spi-ydb-connection-default-database=/local
+      --spi-ydb-connection-default-auth-method=anonymous
+      --spi-ydb-connection-default-create-schema=true
+    ports:
+      - 8080:8080
+    networks:
+      - keycloak
+    depends_on:
+      ydb:
+        condition: service_started

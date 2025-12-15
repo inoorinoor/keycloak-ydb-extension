@@ -16,8 +16,8 @@ class YdbRealmProviderFactory() : RealmProviderFactory<YdbRealmProvider>, Enviro
   private val logger = Logger.getLogger(YdbRealmProviderFactory::class.java)
 
   override fun create(session: KeycloakSession): YdbRealmProvider {
-    val provider =  session.getProvider(YdbConnectionProvider::class.java)?.let {
-      YdbRealmProvider(session, RealmService(it.ydbDSLContext))
+    val provider = session.getProvider(YdbConnectionProvider::class.java)?.let {
+      YdbRealmProvider(session, RealmService(it.ydbDSLContext), it.entityManager)
     } ?: error("YdbConnectionProvider is not configured")
 
     logger.info("YdbRealmProvider successfully created")

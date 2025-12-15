@@ -1,6 +1,6 @@
 package com.yandex.keycloak.ydb.realm.persistense
 
-import jooq.generated.default_schema.tables.pojos.RealmRequiredCredentials
+import jooq.generated.default_schema.tables.pojos.RealmRequiredCredential
 import tech.ydb.jooq.YdbDSLContext
 
 
@@ -8,11 +8,11 @@ import tech.ydb.jooq.YdbDSLContext
 class RealmRequiredCredentialRepository(
   private val dsl: YdbDSLContext
 ) {
-  fun fetchByRealmId(realmId: String): List<RealmRequiredCredentials> {
+  fun fetchByRealmId(realmId: String): List<RealmRequiredCredential> {
     TODO()
   }
 
-  fun insert(toPojo: RealmRequiredCredentials) {
+  fun insert(toPojo: RealmRequiredCredential) {
     TODO()
   }
 }

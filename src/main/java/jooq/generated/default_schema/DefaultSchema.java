@@ -8,9 +8,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import jooq.generated.DefaultCatalog;
-import jooq.generated.default_schema.tables.RealmAttributes;
-import jooq.generated.default_schema.tables.RealmRequiredCredentials;
-import jooq.generated.default_schema.tables.Realms;
+import jooq.generated.default_schema.tables.Realm;
+import jooq.generated.default_schema.tables.RealmAttribute;
+import jooq.generated.default_schema.tables.RealmRequiredCredential;
 
 import org.jooq.Catalog;
 import org.jooq.Table;
@@ -31,19 +31,19 @@ public class DefaultSchema extends SchemaImpl {
     public static final DefaultSchema DEFAULT_SCHEMA = new DefaultSchema();
 
     /**
-     * The table <code>DEFAULT_SCHEMA.realm_attributes</code>.
+     * The table <code>DEFAULT_SCHEMA.REALM</code>.
      */
-    public final RealmAttributes REALM_ATTRIBUTES = RealmAttributes.REALM_ATTRIBUTES;
+    public final Realm REALM = Realm.REALM;
 
     /**
-     * The table <code>DEFAULT_SCHEMA.realm_required_credentials</code>.
+     * The table <code>DEFAULT_SCHEMA.REALM_ATTRIBUTE</code>.
      */
-    public final RealmRequiredCredentials REALM_REQUIRED_CREDENTIALS = RealmRequiredCredentials.REALM_REQUIRED_CREDENTIALS;
+    public final RealmAttribute REALM_ATTRIBUTE = RealmAttribute.REALM_ATTRIBUTE;
 
     /**
-     * The table <code>DEFAULT_SCHEMA.realms</code>.
+     * The table <code>DEFAULT_SCHEMA.REALM_REQUIRED_CREDENTIAL</code>.
      */
-    public final Realms REALMS = Realms.REALMS;
+    public final RealmRequiredCredential REALM_REQUIRED_CREDENTIAL = RealmRequiredCredential.REALM_REQUIRED_CREDENTIAL;
 
     /**
      * No further instances allowed
@@ -61,9 +61,9 @@ public class DefaultSchema extends SchemaImpl {
     @Override
     public final List<Table<?>> getTables() {
         return Arrays.asList(
-            RealmAttributes.REALM_ATTRIBUTES,
-            RealmRequiredCredentials.REALM_REQUIRED_CREDENTIALS,
-            Realms.REALMS
+            Realm.REALM,
+            RealmAttribute.REALM_ATTRIBUTE,
+            RealmRequiredCredential.REALM_REQUIRED_CREDENTIAL
         );
     }
 }

@@ -1,7 +1,7 @@
 package com.yandex.keycloak.ydb.realm.persistense
 
-import jooq.generated.default_schema.Tables.REALM_ATTRIBUTES
-import jooq.generated.default_schema.tables.pojos.RealmAttributes
+import jooq.generated.default_schema.Tables.REALM_ATTRIBUTE
+import jooq.generated.default_schema.tables.pojos.RealmAttribute
 import org.jooq.DSLContext
 import org.keycloak.models.utils.KeycloakModelUtils.generateId
 import tech.ydb.jooq.YdbDSLContext
@@ -12,52 +12,52 @@ class RealmAttributeRepository(
 ) {
 
   fun deleteByRealmId(txDsl: DSLContext, realmId: String) =
-    txDsl.deleteFrom(REALM_ATTRIBUTES)
-      .where(REALM_ATTRIBUTES.REALM_ID.eq(realmId))
+    txDsl.deleteFrom(REALM_ATTRIBUTE)
+      .where(REALM_ATTRIBUTE.REALM_ID.eq(realmId))
       .execute()
 
-  fun removeAllRealmAttributes(realmId: String) {
-    dsl.deleteFrom(REALM_ATTRIBUTES)
-      .where(REALM_ATTRIBUTES.REALM_ID.eq(realmId))
+  fun removeAllRealmAttribute(realmId: String) {
+    dsl.deleteFrom(REALM_ATTRIBUTE)
+      .where(REALM_ATTRIBUTE.REALM_ID.eq(realmId))
       .execute()
   }
 
-  fun upsertRealmAttributes(realmId: String, name: String, values: List<String>) {
-    dsl.upsertInto(REALM_ATTRIBUTES)
-      .values(values.map { RealmAttributes(generateId(), name, it, realmId) })
+  fun upsertRealmAttribute(realmId: String, name: String, values: List<String>) {
+    dsl.upsertInto(REALM_ATTRIBUTE)
+      .values(values.map { RealmAttribute(name, it, realmId) })
       .execute()
   }
 
   // TODO: ask is it good to pass context like this
   fun deleteByRealmIdAndName(realmId: String, name: String) = deleteByRealmIdAndName(dsl, realmId, name)
-  fun deleteByRealmIdAndName(txDsl: DSLContext, realmId: String, name: String) = with(REALM_ATTRIBUTES) {
+  fun deleteByRealmIdAndName(txDsl: DSLContext, realmId: String, name: String) = with(REALM_ATTRIBUTE) {
     txDsl.deleteFrom(this)
       .where(REALM_ID.eq(realmId).and(NAME.eq(name)))
       .execute()
   }
 
   // TODO: ask is it good to pass context like this
-  fun fetchByRealmIdAndName(realmId: String, name: String): List<RealmAttributes> =
+  fun fetchByRealmIdAndName(realmId: String, name: String): List<RealmAttribute> =
     fetchByRealmIdAndName(dsl, realmId, name)
 
   // TODO: ask is it good to pass context like this
-  fun fetchByRealmIdAndName(txDsl: DSLContext, realmId: String, name: String): List<RealmAttributes> =
-    with(REALM_ATTRIBUTES) {
+  fun fetchByRealmIdAndName(txDsl: DSLContext, realmId: String, name: String): List<RealmAttribute> =
+    with(REALM_ATTRIBUTE) {
       TODO()
 //    txDsl.selectFrom(this)
 //      .where(REALM_ID.eq(realmId).and(NAME.eq(name)))
-//      .fetch(mapping(RealmAttributes::class.java))
+//      .fetch(mapping(RealmAttribute::class.java))
     }
 
-  fun fetchByRealmId(realmId: String): List<RealmAttributes> {
+  fun fetchByRealmId(realmId: String): List<RealmAttribute> {
     TODO()
   }
 
-  fun insert(realmAttributes: RealmAttributes) {
+  fun insert(RealmAttribute: RealmAttribute) {
     TODO()
   }
 
-  fun update(map: List<RealmAttributes>) {
+  fun update(map: List<RealmAttribute>) {
     TODO()
   }
 }
