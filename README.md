@@ -1,11 +1,13 @@
 # Local development
 To run keycloak with keycloak-ydb extension. Build this project.
 
-Current version is not really prepared so to success build, so use this: `mvn clean package -Djooq.codegen.skip=true`
+Current version is not really prepared to success build, so use this: `mvn clean package -Djooq.codegen.skip=true`
 
 Then put generated file in `target/keycloak-ydb-extension-1.0-SNAPSHOT.jar` to `docker/ydb/providers/keycloak-ydb-extension-1.0-SNAPSHOT.jar`
 
 And finally run `docker-compose up -d` in `docker/ydb` directory
+
+this is already implemented in `run-keycloack-with-ydb.sh` so you just can call `bash run-keycloack-with-ydb.sh`
 
 # Update jooq codegen:
 
