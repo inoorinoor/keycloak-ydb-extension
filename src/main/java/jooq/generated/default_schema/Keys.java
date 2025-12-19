@@ -4,12 +4,46 @@
 package jooq.generated.default_schema;
 
 
+import jooq.generated.default_schema.tables.AuthenticationExecution;
+import jooq.generated.default_schema.tables.AuthenticationFlow;
+import jooq.generated.default_schema.tables.AuthenticatorConfig;
+import jooq.generated.default_schema.tables.AuthenticatorConfigEntry;
+import jooq.generated.default_schema.tables.Client;
+import jooq.generated.default_schema.tables.Component;
+import jooq.generated.default_schema.tables.ComponentConfig;
+import jooq.generated.default_schema.tables.DefaultClientScope;
+import jooq.generated.default_schema.tables.EventEntity;
 import jooq.generated.default_schema.tables.Realm;
 import jooq.generated.default_schema.tables.RealmAttribute;
+import jooq.generated.default_schema.tables.RealmDefaultGroups;
+import jooq.generated.default_schema.tables.RealmEnabledEventTypes;
+import jooq.generated.default_schema.tables.RealmEventsListeners;
+import jooq.generated.default_schema.tables.RealmLocalizations;
 import jooq.generated.default_schema.tables.RealmRequiredCredential;
+import jooq.generated.default_schema.tables.RealmSmtpConfig;
+import jooq.generated.default_schema.tables.RealmSupportedLocales;
+import jooq.generated.default_schema.tables.RequiredActionConfig;
+import jooq.generated.default_schema.tables.RequiredActionProvider;
+import jooq.generated.default_schema.tables.records.AuthenticationExecutionRecord;
+import jooq.generated.default_schema.tables.records.AuthenticationFlowRecord;
+import jooq.generated.default_schema.tables.records.AuthenticatorConfigEntryRecord;
+import jooq.generated.default_schema.tables.records.AuthenticatorConfigRecord;
+import jooq.generated.default_schema.tables.records.ClientRecord;
+import jooq.generated.default_schema.tables.records.ComponentConfigRecord;
+import jooq.generated.default_schema.tables.records.ComponentRecord;
+import jooq.generated.default_schema.tables.records.DefaultClientScopeRecord;
+import jooq.generated.default_schema.tables.records.EventEntityRecord;
 import jooq.generated.default_schema.tables.records.RealmAttributeRecord;
+import jooq.generated.default_schema.tables.records.RealmDefaultGroupsRecord;
+import jooq.generated.default_schema.tables.records.RealmEnabledEventTypesRecord;
+import jooq.generated.default_schema.tables.records.RealmEventsListenersRecord;
+import jooq.generated.default_schema.tables.records.RealmLocalizationsRecord;
 import jooq.generated.default_schema.tables.records.RealmRecord;
 import jooq.generated.default_schema.tables.records.RealmRequiredCredentialRecord;
+import jooq.generated.default_schema.tables.records.RealmSmtpConfigRecord;
+import jooq.generated.default_schema.tables.records.RealmSupportedLocalesRecord;
+import jooq.generated.default_schema.tables.records.RequiredActionConfigRecord;
+import jooq.generated.default_schema.tables.records.RequiredActionProviderRecord;
 
 import org.jooq.TableField;
 import org.jooq.UniqueKey;
@@ -28,7 +62,24 @@ public class Keys {
     // UNIQUE and PRIMARY KEY definitions
     // -------------------------------------------------------------------------
 
+    public static final UniqueKey<AuthenticationExecutionRecord> PK_AUTHENTICATION_EXECUTION = Internal.createUniqueKey(AuthenticationExecution.AUTHENTICATION_EXECUTION, DSL.name("pk_AUTHENTICATION_EXECUTION"), new TableField[] { AuthenticationExecution.AUTHENTICATION_EXECUTION.ID }, true);
+    public static final UniqueKey<AuthenticationFlowRecord> PK_AUTHENTICATION_FLOW = Internal.createUniqueKey(AuthenticationFlow.AUTHENTICATION_FLOW, DSL.name("pk_AUTHENTICATION_FLOW"), new TableField[] { AuthenticationFlow.AUTHENTICATION_FLOW.ID }, true);
+    public static final UniqueKey<AuthenticatorConfigRecord> PK_AUTHENTICATOR_CONFIG = Internal.createUniqueKey(AuthenticatorConfig.AUTHENTICATOR_CONFIG, DSL.name("pk_AUTHENTICATOR_CONFIG"), new TableField[] { AuthenticatorConfig.AUTHENTICATOR_CONFIG.ID }, true);
+    public static final UniqueKey<AuthenticatorConfigEntryRecord> PK_AUTHENTICATOR_CONFIG_ENTRY = Internal.createUniqueKey(AuthenticatorConfigEntry.AUTHENTICATOR_CONFIG_ENTRY, DSL.name("pk_AUTHENTICATOR_CONFIG_ENTRY"), new TableField[] { AuthenticatorConfigEntry.AUTHENTICATOR_CONFIG_ENTRY.AUTHENTICATOR_ID, AuthenticatorConfigEntry.AUTHENTICATOR_CONFIG_ENTRY.NAME }, true);
+    public static final UniqueKey<ClientRecord> PK_CLIENT = Internal.createUniqueKey(Client.CLIENT, DSL.name("pk_CLIENT"), new TableField[] { Client.CLIENT.ID }, true);
+    public static final UniqueKey<ComponentRecord> PK_COMPONENT = Internal.createUniqueKey(Component.COMPONENT, DSL.name("pk_COMPONENT"), new TableField[] { Component.COMPONENT.ID }, true);
+    public static final UniqueKey<ComponentConfigRecord> PK_COMPONENT_CONFIG = Internal.createUniqueKey(ComponentConfig.COMPONENT_CONFIG, DSL.name("pk_COMPONENT_CONFIG"), new TableField[] { ComponentConfig.COMPONENT_CONFIG.ID }, true);
+    public static final UniqueKey<DefaultClientScopeRecord> PK_DEFAULT_CLIENT_SCOPE = Internal.createUniqueKey(DefaultClientScope.DEFAULT_CLIENT_SCOPE, DSL.name("pk_DEFAULT_CLIENT_SCOPE"), new TableField[] { DefaultClientScope.DEFAULT_CLIENT_SCOPE.REALM_ID, DefaultClientScope.DEFAULT_CLIENT_SCOPE.SCOPE_ID }, true);
+    public static final UniqueKey<EventEntityRecord> PK_EVENT_ENTITY = Internal.createUniqueKey(EventEntity.EVENT_ENTITY, DSL.name("pk_EVENT_ENTITY"), new TableField[] { EventEntity.EVENT_ENTITY.ID }, true);
     public static final UniqueKey<RealmRecord> PK_REALM = Internal.createUniqueKey(Realm.REALM, DSL.name("pk_REALM"), new TableField[] { Realm.REALM.ID }, true);
     public static final UniqueKey<RealmAttributeRecord> PK_REALM_ATTRIBUTE = Internal.createUniqueKey(RealmAttribute.REALM_ATTRIBUTE, DSL.name("pk_REALM_ATTRIBUTE"), new TableField[] { RealmAttribute.REALM_ATTRIBUTE.NAME, RealmAttribute.REALM_ATTRIBUTE.REALM_ID }, true);
+    public static final UniqueKey<RealmDefaultGroupsRecord> PK_REALM_DEFAULT_GROUPS = Internal.createUniqueKey(RealmDefaultGroups.REALM_DEFAULT_GROUPS, DSL.name("pk_REALM_DEFAULT_GROUPS"), new TableField[] { RealmDefaultGroups.REALM_DEFAULT_GROUPS.REALM_ID, RealmDefaultGroups.REALM_DEFAULT_GROUPS.GROUP_ID }, true);
+    public static final UniqueKey<RealmEnabledEventTypesRecord> PK_REALM_ENABLED_EVENT_TYPES = Internal.createUniqueKey(RealmEnabledEventTypes.REALM_ENABLED_EVENT_TYPES, DSL.name("pk_REALM_ENABLED_EVENT_TYPES"), new TableField[] { RealmEnabledEventTypes.REALM_ENABLED_EVENT_TYPES.REALM_ID, RealmEnabledEventTypes.REALM_ENABLED_EVENT_TYPES.VALUE }, true);
+    public static final UniqueKey<RealmEventsListenersRecord> PK_REALM_EVENTS_LISTENERS = Internal.createUniqueKey(RealmEventsListeners.REALM_EVENTS_LISTENERS, DSL.name("pk_REALM_EVENTS_LISTENERS"), new TableField[] { RealmEventsListeners.REALM_EVENTS_LISTENERS.REALM_ID, RealmEventsListeners.REALM_EVENTS_LISTENERS.VALUE }, true);
+    public static final UniqueKey<RealmLocalizationsRecord> PK_REALM_LOCALIZATIONS = Internal.createUniqueKey(RealmLocalizations.REALM_LOCALIZATIONS, DSL.name("pk_REALM_LOCALIZATIONS"), new TableField[] { RealmLocalizations.REALM_LOCALIZATIONS.REALM_ID, RealmLocalizations.REALM_LOCALIZATIONS.LOCALE }, true);
     public static final UniqueKey<RealmRequiredCredentialRecord> PK_REALM_REQUIRED_CREDENTIAL = Internal.createUniqueKey(RealmRequiredCredential.REALM_REQUIRED_CREDENTIAL, DSL.name("pk_REALM_REQUIRED_CREDENTIAL"), new TableField[] { RealmRequiredCredential.REALM_REQUIRED_CREDENTIAL.REALM_ID, RealmRequiredCredential.REALM_REQUIRED_CREDENTIAL.TYPE }, true);
+    public static final UniqueKey<RealmSmtpConfigRecord> PK_REALM_SMTP_CONFIG = Internal.createUniqueKey(RealmSmtpConfig.REALM_SMTP_CONFIG, DSL.name("pk_REALM_SMTP_CONFIG"), new TableField[] { RealmSmtpConfig.REALM_SMTP_CONFIG.REALM_ID, RealmSmtpConfig.REALM_SMTP_CONFIG.NAME }, true);
+    public static final UniqueKey<RealmSupportedLocalesRecord> PK_REALM_SUPPORTED_LOCALES = Internal.createUniqueKey(RealmSupportedLocales.REALM_SUPPORTED_LOCALES, DSL.name("pk_REALM_SUPPORTED_LOCALES"), new TableField[] { RealmSupportedLocales.REALM_SUPPORTED_LOCALES.REALM_ID, RealmSupportedLocales.REALM_SUPPORTED_LOCALES.VALUE }, true);
+    public static final UniqueKey<RequiredActionConfigRecord> PK_REQUIRED_ACTION_CONFIG = Internal.createUniqueKey(RequiredActionConfig.REQUIRED_ACTION_CONFIG, DSL.name("pk_REQUIRED_ACTION_CONFIG"), new TableField[] { RequiredActionConfig.REQUIRED_ACTION_CONFIG.REQUIRED_ACTION_ID, RequiredActionConfig.REQUIRED_ACTION_CONFIG.NAME }, true);
+    public static final UniqueKey<RequiredActionProviderRecord> PK_REQUIRED_ACTION_PROVIDER = Internal.createUniqueKey(RequiredActionProvider.REQUIRED_ACTION_PROVIDER, DSL.name("pk_REQUIRED_ACTION_PROVIDER"), new TableField[] { RequiredActionProvider.REQUIRED_ACTION_PROVIDER.ID }, true);
 }

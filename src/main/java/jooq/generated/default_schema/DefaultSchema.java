@@ -8,9 +8,26 @@ import java.util.Arrays;
 import java.util.List;
 
 import jooq.generated.DefaultCatalog;
+import jooq.generated.default_schema.tables.AuthenticationExecution;
+import jooq.generated.default_schema.tables.AuthenticationFlow;
+import jooq.generated.default_schema.tables.AuthenticatorConfig;
+import jooq.generated.default_schema.tables.AuthenticatorConfigEntry;
+import jooq.generated.default_schema.tables.Client;
+import jooq.generated.default_schema.tables.Component;
+import jooq.generated.default_schema.tables.ComponentConfig;
+import jooq.generated.default_schema.tables.DefaultClientScope;
+import jooq.generated.default_schema.tables.EventEntity;
 import jooq.generated.default_schema.tables.Realm;
 import jooq.generated.default_schema.tables.RealmAttribute;
+import jooq.generated.default_schema.tables.RealmDefaultGroups;
+import jooq.generated.default_schema.tables.RealmEnabledEventTypes;
+import jooq.generated.default_schema.tables.RealmEventsListeners;
+import jooq.generated.default_schema.tables.RealmLocalizations;
 import jooq.generated.default_schema.tables.RealmRequiredCredential;
+import jooq.generated.default_schema.tables.RealmSmtpConfig;
+import jooq.generated.default_schema.tables.RealmSupportedLocales;
+import jooq.generated.default_schema.tables.RequiredActionConfig;
+import jooq.generated.default_schema.tables.RequiredActionProvider;
 
 import org.jooq.Catalog;
 import org.jooq.Table;
@@ -31,6 +48,51 @@ public class DefaultSchema extends SchemaImpl {
     public static final DefaultSchema DEFAULT_SCHEMA = new DefaultSchema();
 
     /**
+     * The table <code>DEFAULT_SCHEMA.AUTHENTICATION_EXECUTION</code>.
+     */
+    public final AuthenticationExecution AUTHENTICATION_EXECUTION = AuthenticationExecution.AUTHENTICATION_EXECUTION;
+
+    /**
+     * The table <code>DEFAULT_SCHEMA.AUTHENTICATION_FLOW</code>.
+     */
+    public final AuthenticationFlow AUTHENTICATION_FLOW = AuthenticationFlow.AUTHENTICATION_FLOW;
+
+    /**
+     * The table <code>DEFAULT_SCHEMA.AUTHENTICATOR_CONFIG</code>.
+     */
+    public final AuthenticatorConfig AUTHENTICATOR_CONFIG = AuthenticatorConfig.AUTHENTICATOR_CONFIG;
+
+    /**
+     * The table <code>DEFAULT_SCHEMA.AUTHENTICATOR_CONFIG_ENTRY</code>.
+     */
+    public final AuthenticatorConfigEntry AUTHENTICATOR_CONFIG_ENTRY = AuthenticatorConfigEntry.AUTHENTICATOR_CONFIG_ENTRY;
+
+    /**
+     * The table <code>DEFAULT_SCHEMA.CLIENT</code>.
+     */
+    public final Client CLIENT = Client.CLIENT;
+
+    /**
+     * The table <code>DEFAULT_SCHEMA.COMPONENT</code>.
+     */
+    public final Component COMPONENT = Component.COMPONENT;
+
+    /**
+     * The table <code>DEFAULT_SCHEMA.COMPONENT_CONFIG</code>.
+     */
+    public final ComponentConfig COMPONENT_CONFIG = ComponentConfig.COMPONENT_CONFIG;
+
+    /**
+     * The table <code>DEFAULT_SCHEMA.DEFAULT_CLIENT_SCOPE</code>.
+     */
+    public final DefaultClientScope DEFAULT_CLIENT_SCOPE = DefaultClientScope.DEFAULT_CLIENT_SCOPE;
+
+    /**
+     * The table <code>DEFAULT_SCHEMA.EVENT_ENTITY</code>.
+     */
+    public final EventEntity EVENT_ENTITY = EventEntity.EVENT_ENTITY;
+
+    /**
      * The table <code>DEFAULT_SCHEMA.REALM</code>.
      */
     public final Realm REALM = Realm.REALM;
@@ -41,9 +103,49 @@ public class DefaultSchema extends SchemaImpl {
     public final RealmAttribute REALM_ATTRIBUTE = RealmAttribute.REALM_ATTRIBUTE;
 
     /**
+     * The table <code>DEFAULT_SCHEMA.REALM_DEFAULT_GROUPS</code>.
+     */
+    public final RealmDefaultGroups REALM_DEFAULT_GROUPS = RealmDefaultGroups.REALM_DEFAULT_GROUPS;
+
+    /**
+     * The table <code>DEFAULT_SCHEMA.REALM_ENABLED_EVENT_TYPES</code>.
+     */
+    public final RealmEnabledEventTypes REALM_ENABLED_EVENT_TYPES = RealmEnabledEventTypes.REALM_ENABLED_EVENT_TYPES;
+
+    /**
+     * The table <code>DEFAULT_SCHEMA.REALM_EVENTS_LISTENERS</code>.
+     */
+    public final RealmEventsListeners REALM_EVENTS_LISTENERS = RealmEventsListeners.REALM_EVENTS_LISTENERS;
+
+    /**
+     * The table <code>DEFAULT_SCHEMA.REALM_LOCALIZATIONS</code>.
+     */
+    public final RealmLocalizations REALM_LOCALIZATIONS = RealmLocalizations.REALM_LOCALIZATIONS;
+
+    /**
      * The table <code>DEFAULT_SCHEMA.REALM_REQUIRED_CREDENTIAL</code>.
      */
     public final RealmRequiredCredential REALM_REQUIRED_CREDENTIAL = RealmRequiredCredential.REALM_REQUIRED_CREDENTIAL;
+
+    /**
+     * The table <code>DEFAULT_SCHEMA.REALM_SMTP_CONFIG</code>.
+     */
+    public final RealmSmtpConfig REALM_SMTP_CONFIG = RealmSmtpConfig.REALM_SMTP_CONFIG;
+
+    /**
+     * The table <code>DEFAULT_SCHEMA.REALM_SUPPORTED_LOCALES</code>.
+     */
+    public final RealmSupportedLocales REALM_SUPPORTED_LOCALES = RealmSupportedLocales.REALM_SUPPORTED_LOCALES;
+
+    /**
+     * The table <code>DEFAULT_SCHEMA.REQUIRED_ACTION_CONFIG</code>.
+     */
+    public final RequiredActionConfig REQUIRED_ACTION_CONFIG = RequiredActionConfig.REQUIRED_ACTION_CONFIG;
+
+    /**
+     * The table <code>DEFAULT_SCHEMA.REQUIRED_ACTION_PROVIDER</code>.
+     */
+    public final RequiredActionProvider REQUIRED_ACTION_PROVIDER = RequiredActionProvider.REQUIRED_ACTION_PROVIDER;
 
     /**
      * No further instances allowed
@@ -61,9 +163,26 @@ public class DefaultSchema extends SchemaImpl {
     @Override
     public final List<Table<?>> getTables() {
         return Arrays.asList(
+            AuthenticationExecution.AUTHENTICATION_EXECUTION,
+            AuthenticationFlow.AUTHENTICATION_FLOW,
+            AuthenticatorConfig.AUTHENTICATOR_CONFIG,
+            AuthenticatorConfigEntry.AUTHENTICATOR_CONFIG_ENTRY,
+            Client.CLIENT,
+            Component.COMPONENT,
+            ComponentConfig.COMPONENT_CONFIG,
+            DefaultClientScope.DEFAULT_CLIENT_SCOPE,
+            EventEntity.EVENT_ENTITY,
             Realm.REALM,
             RealmAttribute.REALM_ATTRIBUTE,
-            RealmRequiredCredential.REALM_REQUIRED_CREDENTIAL
+            RealmDefaultGroups.REALM_DEFAULT_GROUPS,
+            RealmEnabledEventTypes.REALM_ENABLED_EVENT_TYPES,
+            RealmEventsListeners.REALM_EVENTS_LISTENERS,
+            RealmLocalizations.REALM_LOCALIZATIONS,
+            RealmRequiredCredential.REALM_REQUIRED_CREDENTIAL,
+            RealmSmtpConfig.REALM_SMTP_CONFIG,
+            RealmSupportedLocales.REALM_SUPPORTED_LOCALES,
+            RequiredActionConfig.REQUIRED_ACTION_CONFIG,
+            RequiredActionProvider.REQUIRED_ACTION_PROVIDER
         );
     }
 }
