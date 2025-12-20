@@ -3,7 +3,6 @@ package com.yandex.keycloak.ydb.realm
 import com.yandex.keycloak.ydb.config.ProviderPriority.PROVIDER_PRIORITY
 import com.yandex.keycloak.ydb.config.YdbProfile.IS_YDB_PROFILE_ENABLED
 import com.yandex.keycloak.ydb.connection.YdbConnectionProvider
-import com.yandex.keycloak.ydb.realm.service.RealmService
 import org.jboss.logging.Logger
 import org.keycloak.Config
 import org.keycloak.models.KeycloakSession
@@ -17,7 +16,7 @@ class YdbRealmProviderFactory() : RealmProviderFactory<YdbRealmProvider>, Enviro
 
   override fun create(session: KeycloakSession): YdbRealmProvider {
     val provider = session.getProvider(YdbConnectionProvider::class.java)?.let {
-      YdbRealmProvider(session, RealmService(it.ydbDSLContext), it.entityManager)
+      YdbRealmProvider(session, it.entityManager)
     } ?: error("YdbConnectionProvider is not configured")
 
     logger.info("YdbRealmProvider successfully created")
